@@ -1,26 +1,36 @@
 import { z } from 'zod'
 
+// Vercel/.env files often contain variables with an empty value. Treat those as
+// "not set" so defaults apply instead of failing validation at startup.
+const blank = (value: unknown): unknown =>
+  typeof value === 'string' && value.trim() === '' ? undefined : value
+
+const text = z.preprocess(blank, z.string().trim().optional().default(''))
+const textWithDefault = (fallback: string) =>
+  z.preprocess(blank, z.string().trim().optional().default(fallback))
+const positiveInt = z.preprocess(blank, z.coerce.number().int().positive().optional())
+
 const envSchema = z.object({
-  SUPABASE_URL: z.string().trim().optional().default(''),
-  SUPABASE_SERVICE_ROLE_KEY: z.string().trim().optional().default(''),
-  SUPABASE_ANON_KEY: z.string().trim().optional().default(''),
-  VITE_SUPABASE_ANON_KEY: z.string().trim().optional().default(''),
-  ADMIN_EMAILS: z.string().trim().optional().default(''),
-  ADMIN_CONFIGURATION_SECRET: z.string().trim().optional().default(''),
-  PROVIDER_NEXRAY_BASE_URL: z.string().trim().optional().default('https://api.nexray.eu.cc'),
-  PROVIDER_NEXRAY_SECRET: z.string().trim().optional().default(''),
-  JAGOMOTION_API_KEY: z.string().trim().optional().default(''),
-  UPSTASH_REDIS_REST_URL: z.string().trim().optional().default(''),
-  UPSTASH_REDIS_REST_TOKEN: z.string().trim().optional().default(''),
-  DOWNLOAD_MAX_BYTES: z.coerce.number().int().positive().optional(),
-  RATE_LIMIT_GLOBAL_MAX: z.coerce.number().int().positive().optional(),
-  RATE_LIMIT_WINDOW_SECONDS: z.coerce.number().int().positive().optional(),
-  CRON_SECRET: z.string().trim().optional().default(''),
-  CATALOG_STRICT: z
-    .enum(['true', 'false'])
-    .optional()
-    .default('false'),
-  NODE_ENV: z.enum(['development', 'test', 'production']).optional().default('development'),
+  SUPABASE_URL: text,
+  SUPABASE_SERVICE_ROLE_KEY: text,
+  SUPABASE_ANON_KEY: text,
+  VITE_SUPABASE_ANON_KEY: text,
+  ADMIN_EMAILS: text,
+  ADMIN_CONFIGURATION_SECRET: text,
+  PROVIDER_NEXRAY_BASE_URL: textWithDefault('https://api.nexray.eu.cc'),
+  PROVIDER_NEXRAY_SECRET: text,
+  JAGOMOTION_API_KEY: text,
+  UPSTASH_REDIS_REST_URL: text,
+  UPSTASH_REDIS_REST_TOKEN: text,
+  DOWNLOAD_MAX_BYTES: positiveInt,
+  RATE_LIMIT_GLOBAL_MAX: positiveInt,
+  RATE_LIMIT_WINDOW_SECONDS: positiveInt,
+  CRON_SECRET: text,
+  CATALOG_STRICT: z.preprocess(
+    (value) => (typeof value === 'string' ? value.trim().toLowerCase() : value),
+    z.enum(['true', 'false']).optional().default('false').catch('false'),
+  ),
+  NODE_ENV: z.enum(['development', 'test', 'production']).optional().default('development').catch('development'),
 })
 
 export interface AppConfig {

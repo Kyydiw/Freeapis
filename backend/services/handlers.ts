@@ -19,6 +19,12 @@ export interface NativeContext {
   endpointSlug?: string
 }
 
+// TypeScript 5.9 types Uint8Array as Uint8Array<ArrayBufferLike>, which is no
+// longer assignable to the Response body type even though it works at runtime.
+function toResponseBody(bytes: Uint8Array): ConstructorParameters<typeof Response>[0] {
+  return bytes as unknown as ConstructorParameters<typeof Response>[0]
+}
+
 function readString(source: Record<string, unknown>, key: string): string {
   const value = source[key]
   return typeof value === 'string' ? value : ''
@@ -186,7 +192,7 @@ export const streamHandlers: Record<string, StreamHandler> = {
       query: context.query as Record<string, string>,
       maxBytes: context.config.downloadMaxBytes,
     })
-    return new Response(file.bytes, {
+    return new Response(toResponseBody(file.bytes), {
       status: 200,
       headers: {
         'Content-Type': file.contentType,
@@ -231,7 +237,7 @@ export const streamHandlers: Record<string, StreamHandler> = {
       .slice(0, 80) || 'media'
     const fileName = `${baseName}.${extension}`
     const asciiName = fileName.replace(/[^\x20-\x7E]/g, '_').replace(/"/g, '')
-    return new Response(file.bytes, {
+    return new Response(toResponseBody(file.bytes), {
       status: 200,
       headers: {
         'Content-Type': file.contentType,
