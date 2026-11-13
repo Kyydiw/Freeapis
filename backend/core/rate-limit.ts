@@ -1,5 +1,5 @@
-import { getConfig } from '../config/env'
-import { logInternalError } from './errors'
+import { getConfig } from '../config/env.js'
+import { logInternalError } from './errors.js'
 
 export interface RateLimitDecision {
   allowed: boolean

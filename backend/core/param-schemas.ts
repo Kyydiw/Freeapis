@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { legacyEndpointDefinitions } from '../seed/legacy-api-definitions'
+import { legacyEndpointDefinitions } from '../seed/legacy-api-definitions.js'
 
 const encodedText = z.string().max(100_000)
 

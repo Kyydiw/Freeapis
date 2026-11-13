@@ -1,6 +1,6 @@
 import type { IncomingMessage, ServerResponse } from 'node:http'
 import { getRequestListener } from '@hono/node-server'
-import { createApp } from '../backend/app'
+import { createApp } from '../backend/app.js'
 
 type Listener = (request: IncomingMessage, response: ServerResponse) => Promise<void>
 

@@ -1,4 +1,4 @@
-import type { Repositories, UsageLogRow } from '../database/repositories/types'
+import type { Repositories, UsageLogRow } from '../database/repositories/types.js'
 
 export interface AdminAnalytics {
   mode: 'supabase' | 'memory'

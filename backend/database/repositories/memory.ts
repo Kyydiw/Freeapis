@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto'
-import { categoryDefinitions, endpointDefinitions } from '../../seed/definitions'
+import { categoryDefinitions, endpointDefinitions } from '../../seed/definitions.js'
 import type {
   CategoryRepository,
   CategoryRow,
@@ -19,7 +19,7 @@ import type {
   SettingsRepository,
   UsageLogRepository,
   UsageLogRow,
-} from './types'
+} from './types.js'
 
 const MAX_MEMORY_LOGS = 20_000
 

@@ -1,5 +1,5 @@
-import type { Repositories, NewUsageLog } from '../database/repositories/types'
-import { logInternalError } from '../core/errors'
+import type { Repositories, NewUsageLog } from '../database/repositories/types.js'
+import { logInternalError } from '../core/errors.js'
 
 export async function logUsageSafe(repos: Repositories, entry: NewUsageLog): Promise<void> {
   try {

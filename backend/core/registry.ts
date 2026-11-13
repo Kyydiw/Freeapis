@@ -1,10 +1,10 @@
-import { endpointDefinitions } from '../seed/definitions'
-import { getNativeHandler, getStreamHandler } from '../services/handlers'
-import { getNormalizer } from '../providers/normalizers'
-import { getParamSchema } from './param-schemas'
-import { recordIncidentSafe } from '../services/incidents'
-import type { EndpointKind, EndpointRateLimit } from './registry-types'
-import type { EndpointWithCategory, Repositories } from '../database/repositories/types'
+import { endpointDefinitions } from '../seed/definitions.js'
+import { getNativeHandler, getStreamHandler } from '../services/handlers.js'
+import { getNormalizer } from '../providers/normalizers/index.js'
+import { getParamSchema } from './param-schemas.js'
+import { recordIncidentSafe } from '../services/incidents.js'
+import type { EndpointKind, EndpointRateLimit } from './registry-types.js'
+import type { EndpointWithCategory, Repositories } from '../database/repositories/types.js'
 
 export interface ResolvedEndpoint {
   endpointId: string

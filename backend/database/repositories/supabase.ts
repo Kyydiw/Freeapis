@@ -18,8 +18,8 @@ import type {
   SettingsRepository,
   UsageLogRepository,
   UsageLogRow,
-} from './types'
-import { ServiceUnavailableError, logInternalError } from '../../core/errors'
+} from './types.js'
+import { ServiceUnavailableError, logInternalError } from '../../core/errors.js'
 
 function wrapError(scope: string, error: unknown): never {
   logInternalError(scope, error)

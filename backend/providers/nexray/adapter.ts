@@ -1,8 +1,8 @@
 import { z } from 'zod'
-import { getConfig } from '../../config/env'
-import { UpstreamError } from '../../core/errors'
-import { HttpProviderClient, getDefaultProviderClient } from '../http/client'
-import type { ProviderAdapter, ProviderFile, ProviderSpec } from '../types'
+import { getConfig } from '../../config/env.js'
+import { UpstreamError } from '../../core/errors.js'
+import { HttpProviderClient, getDefaultProviderClient } from '../http/client.js'
+import type { ProviderAdapter, ProviderFile, ProviderSpec } from '../types.js'
 
 export const nexrayResultSchema = z
   .object({

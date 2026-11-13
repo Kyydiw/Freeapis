@@ -1,6 +1,6 @@
-import { UpstreamError } from '../../core/errors'
-import { HttpProviderClient, getDefaultProviderClient } from '../http/client'
-import type { ProviderAdapter, ProviderFile, ProviderSpec } from '../types'
+import { UpstreamError } from '../../core/errors.js'
+import { HttpProviderClient, getDefaultProviderClient } from '../http/client.js'
+import type { ProviderAdapter, ProviderFile, ProviderSpec } from '../types.js'
 
 const DEFAULT_TIMEOUT_MS = 20_000
 const DEFAULT_JSON_MAX_BYTES = 4 * 1024 * 1024

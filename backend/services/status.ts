@@ -1,4 +1,4 @@
-import type { IncidentRow, Repositories, UsageLogRow } from '../database/repositories/types'
+import type { IncidentRow, Repositories, UsageLogRow } from '../database/repositories/types.js'
 
 export interface PublicStatusPayload {
   overall: 'operational' | 'degraded'

@@ -1,5 +1,5 @@
 import type { Context } from 'hono'
-import { type AppConfig } from '../config/env'
+import { type AppConfig } from '../config/env.js'
 import {
   AppError,
   BadRequestError,
@@ -11,21 +11,21 @@ import {
   ServiceUnavailableError,
   logInternalError,
   toPublicError,
-} from './errors'
-import { errorEnvelope, jsonHeaders, successEnvelope } from './response'
-import { buildCacheKey, MemoryCache } from './cache'
-import { checkRateLimitSafe, type RateLimiter } from './rate-limit'
-import { formatZodIssues, getParamSchema } from './param-schemas'
-import type { RegistryCache, ResolvedEndpoint } from './registry'
-import { extractClientIp, hashClientIp, newRequestId, sanitizePath } from './request'
-import { corsHeaders, securityHeaderValues } from '../middleware/security'
-import type { Repositories } from '../database/repositories/types'
-import { getNativeHandler, getStreamHandler, type NativeContext } from '../services/handlers'
-import { executeProviderEndpoint } from '../services/provider-execution'
-import { getRateLimitOverrides } from '../services/settings'
-import { recordProviderFailure } from '../services/incidents'
-import { logUsageSafe } from '../services/usage'
-import { background } from '../core/background'
+} from './errors.js'
+import { errorEnvelope, jsonHeaders, successEnvelope } from './response.js'
+import { buildCacheKey, MemoryCache } from './cache.js'
+import { checkRateLimitSafe, type RateLimiter } from './rate-limit.js'
+import { formatZodIssues, getParamSchema } from './param-schemas.js'
+import type { RegistryCache, ResolvedEndpoint } from './registry.js'
+import { extractClientIp, hashClientIp, newRequestId, sanitizePath } from './request.js'
+import { corsHeaders, securityHeaderValues } from '../middleware/security.js'
+import type { Repositories } from '../database/repositories/types.js'
+import { getNativeHandler, getStreamHandler, type NativeContext } from '../services/handlers.js'
+import { executeProviderEndpoint } from '../services/provider-execution.js'
+import { getRateLimitOverrides } from '../services/settings.js'
+import { recordProviderFailure } from '../services/incidents.js'
+import { logUsageSafe } from '../services/usage.js'
+import { background } from '../core/background.js'
 
 const MAX_BODY_BYTES = 16_384
 const NON_CACHEABLE_SLUGS = new Set(['info-ip', 'info-time', 'tools-uuid'])

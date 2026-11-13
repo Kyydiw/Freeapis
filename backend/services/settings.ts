@@ -1,6 +1,6 @@
-import type { Repositories } from '../database/repositories/types'
-import { MemoryCache } from '../core/cache'
-import { logInternalError } from '../core/errors'
+import type { Repositories } from '../database/repositories/types.js'
+import { MemoryCache } from '../core/cache.js'
+import { logInternalError } from '../core/errors.js'
 
 export interface RateLimitOverride {
   windowSeconds: number

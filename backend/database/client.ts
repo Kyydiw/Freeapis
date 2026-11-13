@@ -1,8 +1,8 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
-import { getConfig, isSupabaseConfigured } from '../config/env'
-import { createMemoryRepositories, resetMemoryStoreForTests } from './repositories/memory'
-import { createSupabaseRepositories } from './repositories/supabase'
-import type { Repositories } from './repositories/types'
+import { getConfig, isSupabaseConfigured } from '../config/env.js'
+import { createMemoryRepositories, resetMemoryStoreForTests } from './repositories/memory.js'
+import { createSupabaseRepositories } from './repositories/supabase.js'
+import type { Repositories } from './repositories/types.js'
 
 let supabaseClient: SupabaseClient | null = null
 let memoryRepositories: Repositories | null = null

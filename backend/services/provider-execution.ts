@@ -1,11 +1,11 @@
-import { getConfig } from '../config/env'
-import { ServiceUnavailableError } from '../core/errors'
-import { getProviderAdapter } from '../providers/registry'
-import { getNormalizer } from '../providers/normalizers'
-import type { ProviderAdapter, ProviderSpec } from '../providers/types'
-import type { EndpointRow, Repositories } from '../database/repositories/types'
-import type { ProviderFile } from '../providers/types'
-import { nexrayResponseSchema } from '../providers/nexray/adapter'
+import { getConfig } from '../config/env.js'
+import { ServiceUnavailableError } from '../core/errors.js'
+import { getProviderAdapter } from '../providers/registry.js'
+import { getNormalizer } from '../providers/normalizers/index.js'
+import type { ProviderAdapter, ProviderSpec } from '../providers/types.js'
+import type { EndpointRow, Repositories } from '../database/repositories/types.js'
+import type { ProviderFile } from '../providers/types.js'
+import { nexrayResponseSchema } from '../providers/nexray/adapter.js'
 
 export interface ProviderExecutionResult {
   data: Record<string, unknown>

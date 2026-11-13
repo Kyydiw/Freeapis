@@ -1,5 +1,5 @@
-import type { AppConfig } from '../config/env'
-import type { AppError } from './errors'
+import type { AppConfig } from '../config/env.js'
+import type { AppError } from './errors.js'
 
 export interface SuccessMeta {
   request_id: string

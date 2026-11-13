@@ -1,13 +1,13 @@
 import { createHash, randomUUID } from 'node:crypto'
 import { isIP } from 'node:net'
-import { BadRequestError, AppError } from '../core/errors'
-import { getConfig, type AppConfig } from '../config/env'
-import type { Repositories } from '../database/repositories/types'
-import { extractNexrayDownloadUrl, resolveProviderRaw } from './provider-execution'
-import { buildPublicCatalog } from './catalog'
-import { buildPublicStatus } from './status'
-import { getDefaultProviderClient } from '../providers/http/client'
-import { executeProviderBinaryEndpoint } from './provider-execution'
+import { BadRequestError, AppError } from '../core/errors.js'
+import { getConfig, type AppConfig } from '../config/env.js'
+import type { Repositories } from '../database/repositories/types.js'
+import { extractNexrayDownloadUrl, resolveProviderRaw } from './provider-execution.js'
+import { buildPublicCatalog } from './catalog.js'
+import { buildPublicStatus } from './status.js'
+import { getDefaultProviderClient } from '../providers/http/client.js'
+import { executeProviderBinaryEndpoint } from './provider-execution.js'
 
 export interface NativeContext {
   config: AppConfig

@@ -1,5 +1,5 @@
-import type { CategoryDefinition, EndpointDefinition } from '../core/registry-types'
-import { legacyCategoryDefinitions, legacyEndpointDefinitions } from './legacy-api-definitions'
+import type { CategoryDefinition, EndpointDefinition } from '../core/registry-types.js'
+import { legacyCategoryDefinitions, legacyEndpointDefinitions } from './legacy-api-definitions.js'
 
 export const categoryDefinitions: CategoryDefinition[] = [
   {

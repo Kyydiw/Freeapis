@@ -1,6 +1,6 @@
-import type { AppConfig } from '../config/env'
-import type { Repositories } from '../database/repositories/types'
-import { logInternalError } from '../core/errors'
+import type { AppConfig } from '../config/env.js'
+import type { Repositories } from '../database/repositories/types.js'
+import { logInternalError } from '../core/errors.js'
 
 export interface AdminUser {
   email: string

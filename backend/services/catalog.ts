@@ -1,6 +1,6 @@
-import { endpointDefinitions } from '../seed/definitions'
-import type { EndpointDocs } from '../core/registry-types'
-import type { EndpointWithCategory, Repositories } from '../database/repositories/types'
+import { endpointDefinitions } from '../seed/definitions.js'
+import type { EndpointDocs } from '../core/registry-types.js'
+import type { EndpointWithCategory, Repositories } from '../database/repositories/types.js'
 
 export interface CatalogCategory {
   id: string

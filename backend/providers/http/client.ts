@@ -1,7 +1,7 @@
 import { isIP } from 'node:net'
 import { lookup } from 'node:dns/promises'
-import { UpstreamError, UpstreamTimeoutError } from '../../core/errors'
-import type { HttpRequestSpec, ProviderClientDeps, RawHttpResponse } from '../types'
+import { UpstreamError, UpstreamTimeoutError } from '../../core/errors.js'
+import type { HttpRequestSpec, ProviderClientDeps, RawHttpResponse } from '../types.js'
 
 const PRIVATE_IPV4_PATTERNS: Array<(parts: number[]) => boolean> = [
   (parts) => parts[0] === 0,

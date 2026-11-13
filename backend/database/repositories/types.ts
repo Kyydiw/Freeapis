@@ -1,4 +1,4 @@
-import type { EndpointDocs, EndpointLifecycle, EndpointKind, EndpointRateLimit } from '../../core/registry-types'
+import type { EndpointDocs, EndpointLifecycle, EndpointKind, EndpointRateLimit } from '../../core/registry-types.js'
 
 export interface CategoryRow {
   id: string

@@ -1,8 +1,8 @@
-import { getConfig } from '../config/env'
-import { ServiceUnavailableError } from '../core/errors'
-import { NexrayAdapter } from './nexray/adapter'
-import type { ProviderAdapter } from './types'
-import { GenericHttpAdapter } from './generic/adapter'
+import { getConfig } from '../config/env.js'
+import { ServiceUnavailableError } from '../core/errors.js'
+import { NexrayAdapter } from './nexray/adapter.js'
+import type { ProviderAdapter } from './types.js'
+import { GenericHttpAdapter } from './generic/adapter.js'
 
 export type AdapterFactory = () => ProviderAdapter
 

@@ -1,6 +1,6 @@
-import type { NewIncident, Repositories } from '../database/repositories/types'
-import { logInternalError } from '../core/errors'
-import { background } from '../core/background'
+import type { NewIncident, Repositories } from '../database/repositories/types.js'
+import { logInternalError } from '../core/errors.js'
+import { background } from '../core/background.js'
 
 const DEDUPE_WINDOW_MS = 10 * 60 * 1000
 const MAX_TRACKED_INCIDENTS = 100

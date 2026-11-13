@@ -1,3 +1,5 @@
+import { createRequire } from 'node:module'
+
 type WaitUntil = (promise: Promise<unknown>) => void
 
 let waitUntilImpl: WaitUntil | null | undefined
@@ -9,7 +11,8 @@ let waitUntilImpl: WaitUntil | null | undefined
 function loadWaitUntil(): WaitUntil | null {
   if (waitUntilImpl !== undefined) return waitUntilImpl
   try {
-    const mod = typeof require === 'function' ? (require('@vercel/functions') as { waitUntil?: unknown }) : null
+    const nodeRequire = createRequire(import.meta.url)
+    const mod = nodeRequire('@vercel/functions') as { waitUntil?: unknown }
     waitUntilImpl = typeof mod?.waitUntil === 'function' ? (mod.waitUntil as WaitUntil) : null
   } catch {
     waitUntilImpl = null

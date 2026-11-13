@@ -1,23 +1,23 @@
 import { Hono } from 'hono'
 import type { Context } from 'hono'
-import { getConfig, type AppConfig } from './config/env'
-import { getRepositories } from './database/client'
-import { getRateLimiter } from './core/rate-limit'
-import { MemoryCache } from './core/cache'
-import { RegistryCache } from './core/registry'
-import { handlePublicRequest } from './core/dispatcher'
-import { createAdminRouter } from './admin/routes'
-import { SupabaseAdminAuthenticator, type AdminAuthenticator } from './admin/auth'
-import { corsHeaders, corsPreflight, securityHeaderValues } from './middleware/security'
-import { errorEnvelope, jsonHeaders } from './core/response'
+import { getConfig, type AppConfig } from './config/env.js'
+import { getRepositories } from './database/client.js'
+import { getRateLimiter } from './core/rate-limit.js'
+import { MemoryCache } from './core/cache.js'
+import { RegistryCache } from './core/registry.js'
+import { handlePublicRequest } from './core/dispatcher.js'
+import { createAdminRouter } from './admin/routes.js'
+import { SupabaseAdminAuthenticator, type AdminAuthenticator } from './admin/auth.js'
+import { corsHeaders, corsPreflight, securityHeaderValues } from './middleware/security.js'
+import { errorEnvelope, jsonHeaders } from './core/response.js'
 import {
   ForbiddenError,
   NotFoundError,
   toPublicError,
-} from './core/errors'
-import { newRequestId } from './core/request'
-import type { Repositories } from './database/repositories/types'
-import type { RateLimiter } from './core/rate-limit'
+} from './core/errors.js'
+import { newRequestId } from './core/request.js'
+import type { Repositories } from './database/repositories/types.js'
+import type { RateLimiter } from './core/rate-limit.js'
 
 export interface AppEnv {
   Variables: {

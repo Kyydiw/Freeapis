@@ -1,21 +1,21 @@
 import { Hono } from 'hono'
 import { z } from 'zod'
 import type { Context } from 'hono'
-import type { AppConfig } from '../config/env'
-import type { Repositories } from '../database/repositories/types'
+import type { AppConfig } from '../config/env.js'
+import type { Repositories } from '../database/repositories/types.js'
 import {
   AppError,
   BadRequestError,
   NotFoundError,
   UnauthorizedError,
-} from '../core/errors'
-import { errorEnvelope, jsonHeaders } from '../core/response'
-import { newRequestId } from '../core/request'
-import { securityHeaderValues } from '../middleware/security'
-import type { RegistryCache } from '../core/registry'
-import { MemoryCache } from '../core/cache'
-import { buildAdminAnalytics } from '../services/analytics'
-import type { AdminAuthenticator } from './auth'
+} from '../core/errors.js'
+import { errorEnvelope, jsonHeaders } from '../core/response.js'
+import { newRequestId } from '../core/request.js'
+import { securityHeaderValues } from '../middleware/security.js'
+import type { RegistryCache } from '../core/registry.js'
+import { MemoryCache } from '../core/cache.js'
+import { buildAdminAnalytics } from '../services/analytics.js'
+import type { AdminAuthenticator } from './auth.js'
 
 export interface AdminDeps {
   config: AppConfig

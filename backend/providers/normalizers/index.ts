@@ -1,9 +1,9 @@
-import { UpstreamError } from '../../core/errors'
+import { UpstreamError } from '../../core/errors.js'
 import {
   nexrayResultSchema,
   normalizeSeconds,
   type NexrayResult,
-} from '../nexray/adapter'
+} from '../nexray/adapter.js'
 
 export type Normalizer = (payload: unknown, query: Record<string, string>) => Record<string, unknown>
 
