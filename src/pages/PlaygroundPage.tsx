@@ -5,6 +5,7 @@ import { request } from '@/services/api/client'
 import type { ApiRequestConfig, ApiResponse, HttpMethod } from '@/services/api/api.types'
 import { useCatalog } from '@/hooks/useCatalog'
 import { environment } from '@/config/environment'
+import { site } from '@/config/site'
 import { JsonView, CopyButton, BinaryResponseViewer } from '@/components/api/ResponseViewer'
 import { buildCurl, buildFetch, buildPython, isBinaryEndpoint } from '@/components/api/CodeExamples'
 import { RequestHistory } from '@/components/api/RequestHistory'
@@ -213,7 +214,7 @@ export default function PlaygroundPage() {
     (state.phase === 'done' && Boolean(state.response.binary))
 
   const code = useMemo(() => {
-    const base = environment.apiBaseUrl || window.location.origin
+    const base = environment.apiBaseUrl || site.url
     const options = { binary: binaryMode }
     if (activeTab === 'curl') return buildCurl(config, base, options)
     if (activeTab === 'python') return buildPython(config, base, options)

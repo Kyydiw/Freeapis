@@ -52,7 +52,7 @@ local/server.ts              local API server for development (`npm run dev:api`
 
 ## Public API
 
-All endpoints are free and keyless. Base URL is the deployment origin.
+All endpoints are free and keyless. Base URL: `https://api.kyyinfinite.my.id`.
 
 The migration adds 73 public endpoints from the former `kyyinfiniteweb` catalog: 71 provider-backed endpoints plus the two Alight Motion activation endpoints. Together with the 10 already-listed public endpoints in this project, the resulting public catalog contains 83 active listed endpoints. Categories include search, maker, downloader, tools, AI, news, information, primbon, random, stalker, and anime. JSON endpoints use the standard Kyyinfinite envelope; binary endpoints return their file bytes with the provider content type.
 
@@ -77,7 +77,7 @@ For an existing Supabase deployment, apply `backend/database/migrations/0002_mig
 Example:
 
 ```bash
-curl "https://<your-deployment-domain>/api/v1/youtube/search?q=laufey"
+curl "https://api.kyyinfinite.my.id/api/v1/youtube/search?q=laufey"
 ```
 
 ```json
@@ -154,7 +154,7 @@ Without Supabase, the backend starts with a seeded in-memory catalog. Every rout
 1. Import the repository as a single Vercel project (framework: Vite).
 2. Set the environment variables from the table above.
 3. Deploy. The build runs `tsc` for both frontend and backend, builds `dist/`, and registers exactly one Function: `api/index.ts`.
-4. Verify `GET /api/v1/tools/info` returns the success envelope on the deployment domain.
+4. Add the custom domain `api.kyyinfinite.my.id` in Vercel (Project → Settings → Domains), then verify `GET https://api.kyyinfinite.my.id/api/v1/tools/info` returns the success envelope.
 5. Optionally set `CRON_SECRET` so the daily cron can purge old usage logs.
 
 ## Scripts
@@ -178,3 +178,10 @@ backend/database/migrations/0003_endpoint_parameter_examples.sql
 ```
 
 The sample values prefixed with `YOUR_` are placeholders and should be replaced before sending a request. Public endpoints remain free and do not require developer API keys.
+
+## SEO and link previews
+
+- `index.html` carries Open Graph and Twitter Card tags; the preview image is `public/og-image.png` (1200×630), served at `https://api.kyyinfinite.my.id/og-image.png`. WhatsApp, Telegram, Discord and Facebook read these tags when a link is shared.
+- `public/robots.txt` allows the site, blocks `/admin` and `/api/`, and points to the sitemap.
+- `public/sitemap.xml` is generated from the endpoint catalog. Re-run `npm run sitemap` after adding public endpoints.
+- If a platform still shows an old preview after changes, refresh its cache (Facebook Sharing Debugger; WhatsApp caches per link, so share a new URL variant such as `?v=2`).

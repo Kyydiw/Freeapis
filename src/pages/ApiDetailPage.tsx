@@ -10,6 +10,7 @@ import { PageContainer } from '@/components/layout/PageContainer'
 import { buildCurl, buildFetch, buildPython, isBinaryEndpoint } from '@/components/api/CodeExamples'
 import type { ApiRequestConfig } from '@/services/api/api.types'
 import { environment } from '@/config/environment'
+import { site } from '@/config/site'
 import NotFoundPage from './NotFoundPage'
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
@@ -91,7 +92,7 @@ export default function ApiDetailPage() {
       body: Object.keys(body).length ? body : null,
     }
   }, [endpoint])
-  const baseUrl = environment.apiBaseUrl || (typeof window !== 'undefined' ? window.location.origin : '')
+  const baseUrl = environment.apiBaseUrl || site.url
   const snippetOptions = { binary: endpoint ? isBinaryEndpoint(endpoint) : false }
   const exampleCode = exampleConfig
     ? exampleTab === 'curl' ? buildCurl(exampleConfig, baseUrl, snippetOptions)

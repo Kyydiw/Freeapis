@@ -16,5 +16,5 @@
     "noFallthroughCasesInSwitch": true,
     "baseUrl": "."
   },
-  "include": ["backend", "api", "tests", "local"]
+  "include": ["backend", "api", "tests", "local", "scripts"]
 }

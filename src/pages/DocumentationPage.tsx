@@ -4,6 +4,7 @@ import { Search, Menu, X, BookOpen } from 'lucide-react'
 import { CopyButton } from '@/components/api/ResponseViewer'
 import { EndpointBadge } from '@/components/api/EndpointBadge'
 import { cn } from '@/utils/cn'
+import { site } from '@/config/site'
 
 interface DocSection {
   id: string
@@ -47,7 +48,7 @@ const sections: DocSection[] = [
       {
         kind: 'code',
         language: 'bash',
-        code: `curl -X GET "https://<your-deployment-domain>/api/v1/tools/info"`,
+        code: `curl -X GET "${site.url}/api/v1/tools/info"`,
       },
       {
         kind: 'code',
@@ -70,7 +71,7 @@ const sections: DocSection[] = [
   }
 }`,
       },
-      { kind: 'p', text: 'The base URL is the domain where Kyyinfinite is hosted. It is the same domain serving this documentation. Once your client receives the welcome response, it is ready to call the other endpoints.' },
+      { kind: 'p', text: 'The base URL is https://api.kyyinfinite.my.id. Every endpoint lives under /api/v1 on that domain. Once your client receives the welcome response, it is ready to call the other endpoints.' },
     ],
   },
   {
@@ -121,7 +122,7 @@ const sections: DocSection[] = [
       {
         kind: 'code',
         language: 'javascript',
-        code: `const res = await fetch('/api/v1/tools/uuid?count=5', {
+        code: `const res = await fetch('${site.url}/api/v1/tools/uuid?count=5', {
   method: 'GET',
   headers: { 'Accept': 'application/json' },
 })
@@ -246,7 +247,7 @@ const data = await res.json()`,
         language: 'python',
         code: `import requests
 
-res = requests.get('/api/v1/info/time', params={'tz': 'Asia/Jakarta'}, headers={'Accept': 'application/json'})
+res = requests.get('${site.url}/api/v1/info/time', params={'tz': 'Asia/Jakarta'}, headers={'Accept': 'application/json'})
 print(res.json())`,
       },
       { kind: 'p', text: 'The playground executes real requests against the live platform, so every response you see is exactly what your own code will receive.' },
