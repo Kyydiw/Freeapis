@@ -54,7 +54,7 @@ local/server.ts              local API server for development (`npm run dev:api`
 
 All endpoints are free and keyless. Base URL: `https://api.kyyinfinite.my.id`.
 
-The migration adds 73 public endpoints from the former `kyyinfiniteweb` catalog: 71 provider-backed endpoints plus the two Alight Motion activation endpoints. Together with the 10 already-listed public endpoints in this project, the resulting public catalog contains 83 active listed endpoints. Categories include search, maker, downloader, tools, AI, news, information, primbon, random, stalker, and anime. JSON endpoints use the standard Kyyinfinite envelope; binary endpoints return their file bytes with the provider content type.
+The migration adds 73 public endpoints from the former `kyyinfiniteweb` catalog: 71 provider-backed endpoints plus the two Alight Motion activation endpoints. Together with the 10 already-listed public endpoints in this project, the resulting public catalog contained 83 active listed endpoints. Migrations 0005 and 0006 later added the AI endpoints (DeepSearch, Gemini, GPT-OSS 120B, Phi-2, DeepSeek R1) and more search endpoints (Wallcraft, Wikipedia, Sticker.ly, SFile, Pinterest Video, NPM, Lyrics, iStock, CapCut), for 97 active listed endpoints. Categories include search, maker, downloader, tools, AI, news, information, primbon, random, stalker, and anime. JSON endpoints use the standard Kyyinfinite envelope; binary endpoints return their file bytes with the provider content type.
 
 For an existing Supabase deployment, apply `backend/database/migrations/0002_migrate_legacy_api_registry.sql` after `0001_init.sql`. Local development uses the in-memory seed and does not require a database migration. The two Alight Motion endpoints additionally require the server-only `JAGOMOTION_API_KEY`; all other migrated endpoints route through the configured generic provider adapters for `api.nexray.eu.cc` and `api.siputzx.my.id`. See [MIGRATION_REPORT.md](./MIGRATION_REPORT.md) for the complete endpoint inventory and migration boundary.
 
@@ -185,3 +185,10 @@ The sample values prefixed with `YOUR_` are placeholders and should be replaced 
 - `public/robots.txt` allows the site, blocks `/admin` and `/api/`, and points to the sitemap.
 - `public/sitemap.xml` is generated from the endpoint catalog. Re-run `npm run sitemap` after adding public endpoints.
 - If a platform still shows an old preview after changes, refresh its cache (Facebook Sharing Debugger; WhatsApp caches per link, so share a new URL variant such as `?v=2`).
+
+## Adding endpoints
+
+1. Add the definition to `backend/seed/legacy-api-definitions.ts` (provider, `providerPath`, `paramsMap`, docs, rate limit).
+2. For a Supabase deployment, add a matching migration like `0006_add_ai_models_and_search_endpoints.sql` and run it in the SQL Editor. Local development and tests use the in-memory seed and need no migration.
+3. Add custom query validation in `backend/core/param-schemas.ts` only if the default (required/optional non-empty strings) is not enough, as done for the AI chat endpoints (`temperature` must be 0 to 2).
+4. Update the endpoint count in `tests/integration/legacy-api.test.ts`, then run `npm test` and `npm run sitemap`.

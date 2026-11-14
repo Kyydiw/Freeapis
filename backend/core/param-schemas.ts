@@ -95,6 +95,23 @@ for (const definition of legacyEndpointDefinitions) {
   paramSchemas[definition.paramSchemaId] = { query: z.object(shape).strict() }
 }
 
+// AI chat models accept a prompt plus optional system instruction and temperature (0-2).
+const aiChatQuery = z
+  .object({
+    prompt: z.string().trim().min(1).max(4_000),
+    system: z.string().trim().min(1).max(2_000).optional(),
+    temperature: z
+      .string()
+      .trim()
+      .regex(/^(?:[01](?:\.\d{1,2})?|2(?:\.0{1,2})?)$/, 'must be a number between 0 and 2')
+      .optional(),
+  })
+  .strict()
+
+for (const slug of ['ai-gptoss120b', 'ai-phi2', 'ai-deepseekr1']) {
+  paramSchemas[`legacy-query-${slug}`] = { query: aiChatQuery }
+}
+
 paramSchemas['alight-motion-send-body'] = {
   query: z.object({}).strict(),
   body: z.object({ email: z.string().trim().email().max(254) }).strict(),
