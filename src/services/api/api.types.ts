@@ -73,6 +73,12 @@ export interface ApiResponse<T> {
   sizeBytes: number
   data: T
   binary?: BinaryApiPayload
+  /** Response headers, lowercased as reported by fetch. */
+  headers?: Record<string, string>
+  /** Raw value of the response `content-type` header, when present. */
+  contentType?: string
+  /** Unparsed response body text (non-binary responses only). */
+  rawText?: string
 }
 
 export interface ApiRequestConfig {

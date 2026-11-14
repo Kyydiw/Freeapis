@@ -1,9 +1,17 @@
 import type { ApiAdapter } from './ApiAdapter'
 import type { ApiResponse, ApiRequestConfig } from '@/services/api/api.types'
-import { ApiError, NetworkError } from '@/services/api/api.errors'
+import { ApiError, NetworkError, TimeoutError } from '@/services/api/api.errors'
 import { environment } from '@/config/environment'
 
 const REQUEST_TIMEOUT_MS = 30000
+
+function collectHeaders(res: Response): Record<string, string> {
+  const headers: Record<string, string> = {}
+  res.headers.forEach((value, key) => {
+    headers[key.toLowerCase()] = value
+  })
+  return headers
+}
 
 export class HttpApiAdapter implements ApiAdapter {
   private readonly baseUrl: string
@@ -54,12 +62,15 @@ export class HttpApiAdapter implements ApiAdapter {
           sizeBytes: blob.size,
           data: { contentType, disposition, size: blob.size, filename, binary: true } as T,
           binary: { blob, contentType: contentType || blob.type || 'application/octet-stream', disposition, filename },
+          headers: collectHeaders(res),
+          contentType,
         }
       }
 
       const text = await res.text()
       const durationMs = Math.round(performance.now() - started)
       const sizeBytes = new TextEncoder().encode(text).length
+      const headers = collectHeaders(res)
       let parsed: unknown = {}
       if (text) {
         try {
@@ -75,7 +86,7 @@ export class HttpApiAdapter implements ApiAdapter {
           res.status,
           envelope.message ?? (res.statusText || 'Request failed'),
           envelope.error?.details,
-          { body: parsed, durationMs, sizeBytes },
+          { body: parsed, durationMs, sizeBytes, headers, contentType, rawText: text },
         )
       }
 
@@ -85,13 +96,17 @@ export class HttpApiAdapter implements ApiAdapter {
         durationMs,
         sizeBytes,
         data: parsed as T,
+        headers,
+        contentType,
+        rawText: text,
       }
     } catch (error) {
       if (error instanceof ApiError) throw error
       if (error instanceof DOMException && error.name === 'AbortError') {
-        throw config.signal?.aborted
-          ? new DOMException('Aborted', 'AbortError')
-          : new NetworkError('The request timed out.')
+        if (config.signal?.aborted) throw new DOMException('Aborted', 'AbortError')
+        // The request exceeded the internal timeout — keep this distinct from
+        // genuine network failures so the playground can explain each case.
+        throw new TimeoutError()
       }
       throw new NetworkError()
     } finally {

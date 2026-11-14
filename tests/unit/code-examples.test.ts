@@ -6,7 +6,9 @@ import { legacyEndpointDefinitions } from '../../backend/seed/legacy-api-definit
 describe('copy-ready API examples', () => {
   it('provides an example value for every migrated endpoint parameter', () => {
     const params = legacyEndpointDefinitions.flatMap((endpoint) => endpoint.docs.params)
-    expect(params.length).toBe(84)
+    // The catalog grew after migrations 0005/0006 (AI + search endpoints),
+    // so this count tracks the current seed inventory.
+    expect(params.length).toBe(104)
     expect(params.every((param) => param.example !== undefined)).toBe(true)
   })
 

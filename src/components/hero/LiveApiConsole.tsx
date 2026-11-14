@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { request } from '@/services/api/client'
 import type { ApiResponse } from '@/services/api/api.types'
-import { JsonView } from '@/components/api/ResponseViewer'
+import { JsonView } from '@/components/code/JsonView'
 import { ApiError } from '@/services/api/api.errors'
 import { cn } from '@/utils/cn'
 
@@ -141,16 +141,16 @@ export function LiveApiConsole({
 
       <div className={cn('min-h-0 overflow-hidden px-4 py-2.5', bodyScroll)}>
         {state === 'loading' || !response ? (
-          <div className="flex h-full flex-col justify-center overflow-hidden whitespace-pre font-mono text-[12px] leading-[20px] text-[#6c7390]">
+          <div className="flex h-full flex-col justify-center overflow-hidden whitespace-pre font-mono text-[12px] leading-[20px] text-[#6c7390] code-surface language-json">
             <span>{'{'}</span>
             <span className="pl-4">
-              "status": <span className="jv-string">"…"</span>,
+              "status": <span className="hljs-string">"…"</span>,
             </span>
             <span className="pl-4">
-              "message": <span className="jv-string">"…"</span>,
+              "message": <span className="hljs-string">"…"</span>,
             </span>
             <span className="pl-4">
-              "free": <span className="jv-boolean">…</span>
+              "free": <span className="hljs-literal">…</span>
             </span>
             <span>{'}'}</span>
           </div>

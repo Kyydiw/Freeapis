@@ -5,7 +5,10 @@ import { TLink } from '@/components/motion/PageTransition'
 import { ArrowLeft, ArrowUpRight, FlaskConical } from 'lucide-react'
 import { useCatalog } from '@/hooks/useCatalog'
 import { EndpointBadge } from '@/components/api/EndpointBadge'
-import { JsonView, CopyButton } from '@/components/api/ResponseViewer'
+import { CodeBlock } from '@/components/code/CodeBlock'
+import { CopyButton } from '@/components/code/CopyButton'
+import { DataTable } from '@/components/ui/DataTable'
+import { Tabs } from '@/components/ui/Tabs'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { buildCurl, buildFetch, buildPython, isBinaryEndpoint } from '@/components/api/CodeExamples'
 import type { ApiRequestConfig } from '@/services/api/api.types'
@@ -13,51 +16,25 @@ import { environment } from '@/config/environment'
 import { site } from '@/config/site'
 import NotFoundPage from './NotFoundPage'
 
+type ExampleLanguage = 'curl' | 'fetch' | 'python'
+
+const exampleTabs = [
+  { id: 'curl' as const, label: 'cURL' },
+  { id: 'fetch' as const, label: 'JavaScript' },
+  { id: 'python' as const, label: 'Python' },
+]
+
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <section className="mt-10">
+    <section className="mt-10" aria-label={title}>
       <h2 className="font-display text-lg font-bold text-ink">{title}</h2>
       <div className="mt-4">{children}</div>
     </section>
   )
 }
 
-function DataTable({
-  head,
-  rows,
-}: {
-  head: string[]
-  rows: React.ReactNode[][]
-}) {
-  return (
-    <div className="overflow-x-auto rounded-xl border border-line bg-paper-raised">
-      <table className="w-full min-w-[560px] text-left">
-        <thead>
-          <tr className="border-b border-line-muted">
-            {head.map((h) => (
-              <th
-                key={h}
-                className="px-4 py-3 font-body text-[11px] font-bold uppercase tracking-wideCaps text-ink-soft"
-              >
-                {h}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((row, i) => (
-            <tr key={i} className="border-b border-line-muted last:border-0">
-              {row.map((cell, j) => (
-                <td key={j} className="px-4 py-3 align-top font-body text-[13px] text-ink-soft">
-                  {cell}
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  )
+function jsonBlock(payload: Record<string, unknown> | Record<string, unknown>[]): string {
+  return JSON.stringify(payload, null, 2)
 }
 
 export default function ApiDetailPage() {
@@ -71,7 +48,8 @@ export default function ApiDetailPage() {
     [data, category, endpointId],
   )
   const categoryName = data?.categories.find((c) => c.id === endpoint?.category)?.name
-  const [exampleTab, setExampleTab] = useState<'curl' | 'fetch' | 'python'>('curl')
+  const [exampleTab, setExampleTab] = useState<ExampleLanguage>('curl')
+
   const exampleConfig = useMemo<ApiRequestConfig | null>(() => {
     if (!endpoint) return null
     const query: Record<string, string> = {}
@@ -92,13 +70,18 @@ export default function ApiDetailPage() {
       body: Object.keys(body).length ? body : null,
     }
   }, [endpoint])
+
   const baseUrl = environment.apiBaseUrl || site.url
   const snippetOptions = { binary: endpoint ? isBinaryEndpoint(endpoint) : false }
-  const exampleCode = exampleConfig
-    ? exampleTab === 'curl' ? buildCurl(exampleConfig, baseUrl, snippetOptions)
-      : exampleTab === 'python' ? buildPython(exampleConfig, baseUrl, snippetOptions)
-        : buildFetch(exampleConfig, baseUrl, snippetOptions)
-    : ''
+  const exampleCode = useMemo(() => {
+    if (!exampleConfig) return ''
+    if (exampleTab === 'curl') return buildCurl(exampleConfig, baseUrl, snippetOptions)
+    if (exampleTab === 'python') return buildPython(exampleConfig, baseUrl, snippetOptions)
+    return buildFetch(exampleConfig, baseUrl, snippetOptions)
+  }, [exampleConfig, exampleTab, baseUrl, endpoint])
+
+  const exampleLanguage: string =
+    exampleTab === 'curl' ? 'curl' : exampleTab === 'python' ? 'python' : 'javascript'
 
   if (isLoading) {
     return (
@@ -127,13 +110,15 @@ export default function ApiDetailPage() {
 
   if (!endpoint) return <NotFoundPage />
 
+  const requestExampleCode = endpoint.requestExample ? jsonBlock(endpoint.requestExample) : ''
+
   return (
     <PageContainer className="py-10 md:py-14">
       <TLink
         to={`/apis?category=${endpoint.category}`}
         className="inline-flex items-center gap-2 font-body text-sm font-semibold text-ink-soft transition-colors hover:text-cobalt"
       >
-        <ArrowLeft size={15} /> Back to {categoryName ?? 'explorer'}
+        <ArrowLeft size={15} aria-hidden="true" /> Back to {categoryName ?? 'explorer'}
       </TLink>
 
       <div className="mt-6 flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
@@ -155,28 +140,28 @@ export default function ApiDetailPage() {
             to={`/playground?endpoint=${endpoint.id}`}
             className="btn-primary h-12 px-6 text-sm"
           >
-            <FlaskConical size={16} /> Try this API
+            <FlaskConical size={16} aria-hidden="true" /> Try this API
           </TLink>
           <span className="inline-flex h-12 items-center justify-center gap-2 rounded-xl border-[1.5px] border-line bg-paper-raised px-6 font-body text-sm font-bold text-ink-soft shadow-tactileLine">
-            <span className="h-2 w-2 rounded-full bg-success" />
+            <span className="h-2 w-2 rounded-full bg-success" aria-hidden="true" />
             No authentication required
           </span>
         </div>
       </div>
 
       <div className="mt-8 flex flex-wrap items-center gap-3 rounded-xl border border-navy-border bg-navy px-4 py-3.5">
-        <EndpointBadge method={endpoint.method} />
+        <EndpointBadge method={endpoint.method} onDark />
         <code className="min-w-0 flex-1 truncate font-mono text-sm text-[#c8cfe4]">
           {endpoint.path}
         </code>
         <span className="rounded-md border border-success/40 bg-success/10 px-2 py-1 font-body text-[11px] font-bold text-success">
           FREE
         </span>
-        <CopyButton value={endpoint.path} label="Copy path" onDark />
+        <CopyButton value={endpoint.path} label="Copy path" onDark srLabel="Copy endpoint path" />
       </div>
 
       <Section title="Authentication">
-        <p className="font-body text-sm leading-relaxed text-ink-soft">
+        <p className="max-w-[72ch] font-body text-sm leading-relaxed text-ink-soft">
           This public endpoint is completely free. Call it directly from any client — no API key, token, or developer signup is required.
         </p>
       </Section>
@@ -186,10 +171,10 @@ export default function ApiDetailPage() {
           <DataTable
             head={['Name', 'In', 'Type', 'Required', 'Example', 'Description']}
             rows={endpoint.params.map((p) => [
-              <code key="n" className="font-mono text-xs text-cobalt">
+              <code key="n" className="whitespace-nowrap font-mono text-xs text-cobalt">
                 {p.name}
               </code>,
-              <span key="l" className="font-mono text-xs uppercase">
+              <span key="l" className="whitespace-nowrap font-mono text-xs uppercase">
                 {p.location}
               </span>,
               <span key="t" className="font-mono text-xs">
@@ -203,7 +188,7 @@ export default function ApiDetailPage() {
               ) : (
                 <span key="r">optional</span>
               ),
-              <code key="e" className="font-mono text-xs text-ink">{p.example === undefined ? '—' : String(p.example)}</code>,
+              <code key="e" className="whitespace-nowrap font-mono text-xs text-ink">{p.example === undefined ? '—' : String(p.example)}</code>,
               <span key="d">{p.description}</span>,
             ])}
           />
@@ -212,25 +197,21 @@ export default function ApiDetailPage() {
 
       <Section title="Copy-ready request example">
         <div className="overflow-hidden rounded-xl border border-navy-border bg-navy">
-          <div className="flex flex-wrap items-center gap-1 border-b border-navy-border px-3 pt-2">
-            {([
-              { id: 'curl', label: 'cURL' },
-              { id: 'fetch', label: 'JavaScript' },
-              { id: 'python', label: 'Python' },
-            ] as const).map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setExampleTab(tab.id)}
-                className={`rounded-t-lg px-3 py-2 font-body text-xs font-semibold transition-colors ${exampleTab === tab.id ? 'border border-navy-border border-b-transparent bg-[#172139] text-white' : 'text-[#8b93ab] hover:text-white'}`}
-              >
-                {tab.label}
-              </button>
-            ))}
-            <div className="ml-auto pb-1 pr-1">
-              <CopyButton value={exampleCode} label="Copy request" onDark />
-            </div>
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-navy-border px-3 pt-1.5">
+            <Tabs
+              variant="navy"
+              ariaLabel="Request example language"
+              value={exampleTab}
+              onChange={setExampleTab}
+              items={exampleTabs}
+            />
           </div>
-          <pre className="overflow-x-auto p-4 font-mono text-xs leading-relaxed text-[#c8cfe4]">{exampleCode}</pre>
+          <CodeBlock
+            code={exampleCode}
+            language={exampleLanguage}
+            showToolbar={false}
+            className="rounded-none border-0"
+          />
         </div>
         <p className="mt-2 font-body text-xs leading-relaxed text-ink-soft">
           Replace the <code className="font-mono">YOUR_...</code> sample values with your own input. No API key is needed.
@@ -242,7 +223,7 @@ export default function ApiDetailPage() {
           <DataTable
             head={['Header', 'Required', 'Description']}
             rows={endpoint.headers.map((h) => [
-              <code key="n" className="font-mono text-xs text-cobalt">
+              <code key="n" className="whitespace-nowrap font-mono text-xs text-cobalt">
                 {h.name}
               </code>,
               h.required ? (
@@ -258,37 +239,32 @@ export default function ApiDetailPage() {
         </Section>
       )}
 
-      {endpoint.requestExample && (
+      {requestExampleCode && (
         <Section title="Example request body">
-          <div className="relative rounded-xl border border-navy-border bg-navy p-4">
-            <div className="absolute right-3 top-3">
-              <CopyButton
-                value={JSON.stringify(endpoint.requestExample, null, 2)}
-                onDark
-              />
-            </div>
-            <JsonView data={endpoint.requestExample} />
-          </div>
+          <CodeBlock
+            code={requestExampleCode}
+            language="json"
+            showLineNumbers={requestExampleCode.split('\n').length >= 8}
+          />
         </Section>
       )}
 
       <Section title="Example response">
-        <div className="relative rounded-xl border border-navy-border bg-navy p-4">
-          <div className="absolute right-3 top-3">
-            <CopyButton value={JSON.stringify(endpoint.responseExample, null, 2)} onDark />
-          </div>
-          <JsonView data={endpoint.responseExample} />
-        </div>
+        <CodeBlock
+          code={jsonBlock(endpoint.responseExample)}
+          language="json"
+          showLineNumbers={jsonBlock(endpoint.responseExample).split('\n').length >= 8}
+        />
       </Section>
 
       <Section title="Response schema">
         <DataTable
           head={['Field', 'Type', 'Description']}
           rows={endpoint.responseSchema.map((f) => [
-            <code key="n" className="font-mono text-xs text-cobalt">
+            <code key="n" className="whitespace-nowrap font-mono text-xs text-cobalt">
               {f.name}
             </code>,
-            <span key="t" className="font-mono text-xs">
+            <span key="t" className="whitespace-nowrap font-mono text-xs">
               {f.type}
             </span>,
             <span key="d">{f.description}</span>,
@@ -300,10 +276,10 @@ export default function ApiDetailPage() {
         <DataTable
           head={['Code', 'Name', 'Description']}
           rows={endpoint.errorCodes.map((e) => [
-            <span key="c" className="font-mono text-xs font-bold text-signal">
+            <span key="c" className="whitespace-nowrap font-mono text-xs font-bold text-signal">
               {e.code}
             </span>,
-            <code key="n" className="font-mono text-xs text-cobalt">
+            <code key="n" className="whitespace-nowrap font-mono text-xs text-cobalt">
               {e.name}
             </code>,
             <span key="d">{e.description}</span>,
@@ -320,7 +296,7 @@ export default function ApiDetailPage() {
           to={`/playground?endpoint=${endpoint.id}`}
           className="btn-primary mt-5 h-12 px-6 text-sm"
         >
-          Open in Playground <ArrowUpRight size={15} />
+          Open in Playground <ArrowUpRight size={15} aria-hidden="true" />
         </TLink>
       </div>
     </PageContainer>

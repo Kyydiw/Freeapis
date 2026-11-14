@@ -98,23 +98,114 @@ body::-webkit-scrollbar-thumb:hover {
   }
 }
 
-.json-view .jv-key {
-  color: #c8cfe4;
+/* ------------------------------------------------------------------ */
+/* Code surfaces — shared syntax theme tuned to the navy console       */
+/* identity. Used by CodeBlock, JsonView, and every highlighted code   */
+/* example in the frontend.                                            */
+/* ------------------------------------------------------------------ */
+.code-surface .hljs-comment,
+.code-surface .hljs-quote {
+  color: #6c7390;
+  font-style: italic;
 }
-.json-view .jv-string {
-  color: #e8e9ee;
-}
-.json-view .jv-boolean {
+
+.code-surface .hljs-keyword,
+.code-surface .hljs-selector-tag,
+.code-surface .hljs-doctag {
   color: #6fa8f5;
 }
-.json-view .jv-number {
+
+.code-surface .hljs-string,
+.code-surface .hljs-regexp {
   color: #f2b56b;
 }
-.json-view .jv-null {
+
+.code-surface .hljs-number {
+  color: #e8927c;
+}
+
+.code-surface .hljs-literal {
+  color: #7ee2a8;
+}
+
+.code-surface .hljs-title,
+.code-surface .hljs-params,
+.code-surface .hljs-subst,
+.code-surface .hljs-variable,
+.code-surface .hljs-template-variable {
+  color: #c8cfe4;
+}
+
+.code-surface .hljs-title.function_,
+.code-surface .hljs-built_in,
+.code-surface .hljs-builtin {
+  color: #9dd0ff;
+}
+
+.code-surface .hljs-title.class_,
+.code-surface .hljs-type {
+  color: #7ee2a8;
+}
+
+.code-surface .hljs-attr,
+.code-surface .hljs-attribute {
+  color: #b8c6ef;
+}
+
+.code-surface .hljs-punctuation,
+.code-surface .hljs-operator,
+.code-surface .hljs-meta {
   color: #8b93ab;
 }
-.json-view .jv-punct {
+
+/* JSON keeps the exact console palette the platform has always used. */
+.code-surface .language-json .hljs-attr {
+  color: #c8cfe4;
+}
+
+.code-surface .language-json .hljs-string {
+  color: #e8e9ee;
+}
+
+.code-surface .language-json .hljs-number {
+  color: #f2b56b;
+}
+
+.code-surface .language-json .hljs-literal {
+  color: #6fa8f5;
+}
+
+.code-surface .language-json .hljs-punctuation {
   color: #8b93ab;
+}
+
+.code-surface code {
+  display: block;
+}
+
+/* Thin, calm scrollbars for code regions. */
+.code-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #2c3550 transparent;
+}
+
+.code-scroll::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.code-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.code-scroll::-webkit-scrollbar-thumb {
+  background: #2c3550;
+  border-radius: 8px;
+  border: 2px solid #171e2c;
+}
+
+.code-scroll::-webkit-scrollbar-thumb:hover {
+  background: #3a4660;
 }
 
 .motion-curtain {
