@@ -37,31 +37,31 @@
     <priority>0.4</priority>
   </url>
   <url>
-    <loc>https://api.kyyinfinite.my.id/apis/ai/tools-info</loc>
+    <loc>https://api.kyyinfinite.my.id/apis/tools/tools-info</loc>
     <lastmod>2026-11-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://api.kyyinfinite.my.id/apis/ai/tools-uuid</loc>
+    <loc>https://api.kyyinfinite.my.id/apis/tools/tools-uuid</loc>
     <lastmod>2026-11-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://api.kyyinfinite.my.id/apis/ai/tools-base64</loc>
+    <loc>https://api.kyyinfinite.my.id/apis/tools/tools-base64</loc>
     <lastmod>2026-11-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://api.kyyinfinite.my.id/apis/ai/tools-hash</loc>
+    <loc>https://api.kyyinfinite.my.id/apis/tools/tools-hash</loc>
     <lastmod>2026-11-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://api.kyyinfinite.my.id/apis/ai/tools-url-encode</loc>
+    <loc>https://api.kyyinfinite.my.id/apis/tools/tools-url-encode</loc>
     <lastmod>2026-11-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -523,13 +523,13 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://api.kyyinfinite.my.id/apis/ai/alight-motion-send</loc>
+    <loc>https://api.kyyinfinite.my.id/apis/tools/alight-motion-send</loc>
     <lastmod>2026-11-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://api.kyyinfinite.my.id/apis/ai/alight-motion-verify</loc>
+    <loc>https://api.kyyinfinite.my.id/apis/tools/alight-motion-verify</loc>
     <lastmod>2026-11-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -614,6 +614,102 @@
   </url>
   <url>
     <loc>https://api.kyyinfinite.my.id/apis/search/search-capcut</loc>
+    <lastmod>2026-11-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://api.kyyinfinite.my.id/apis/ai/ai-gita</loc>
+    <lastmod>2026-11-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://api.kyyinfinite.my.id/apis/ai/ai-bibleai</loc>
+    <lastmod>2026-11-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://api.kyyinfinite.my.id/apis/ai/ai-powerbrain</loc>
+    <lastmod>2026-11-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://api.kyyinfinite.my.id/apis/random/random-quotesanime</loc>
+    <lastmod>2026-11-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://api.kyyinfinite.my.id/apis/random/random-lahelu</loc>
+    <lastmod>2026-11-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://api.kyyinfinite.my.id/apis/tools/tools-yt-transcribe</loc>
+    <lastmod>2026-11-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://api.kyyinfinite.my.id/apis/tools/tools-ssweb</loc>
+    <lastmod>2026-11-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://api.kyyinfinite.my.id/apis/tools/tools-ocr</loc>
+    <lastmod>2026-11-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://api.kyyinfinite.my.id/apis/tools/tools-nsfw-checker</loc>
+    <lastmod>2026-11-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://api.kyyinfinite.my.id/apis/tools/tools-removebg</loc>
+    <lastmod>2026-11-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://api.kyyinfinite.my.id/apis/tools/tools-remini</loc>
+    <lastmod>2026-11-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://api.kyyinfinite.my.id/apis/tools/tools-blurface</loc>
+    <lastmod>2026-11-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://api.kyyinfinite.my.id/apis/tools/tools-dewatermark</loc>
+    <lastmod>2026-11-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://api.kyyinfinite.my.id/apis/news/news-ffnews</loc>
+    <lastmod>2026-11-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://api.kyyinfinite.my.id/apis/maker/maker-gura</loc>
+    <lastmod>2026-11-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://api.kyyinfinite.my.id/apis/maker/maker-musiccard</loc>
     <lastmod>2026-11-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>

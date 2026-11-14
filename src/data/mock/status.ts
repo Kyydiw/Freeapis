@@ -24,7 +24,8 @@ export interface ServiceGroup {
 }
 
 export const serviceGroups: ServiceGroup[] = [
-  { id: 'ai', name: 'AI & Tools', description: 'Text engine and utilities', status: 'operational', responseTimeMs: 142, history: [] },
+  { id: 'ai', name: 'AI', description: 'AI model endpoints', status: 'operational', responseTimeMs: 142, history: [] },
+  { id: 'tools', name: 'Tools', description: 'Utilities and image tools', status: 'operational', responseTimeMs: 131, history: [] },
   { id: 'downloader', name: 'Downloader', description: 'Media fetch pipeline', status: 'operational', responseTimeMs: 203, history: [] },
   { id: 'search', name: 'Search', description: 'Web and image search', status: 'operational', responseTimeMs: 118, history: [] },
   { id: 'image', name: 'Image', description: 'Image processing workers', status: 'operational', responseTimeMs: 167, history: [] },

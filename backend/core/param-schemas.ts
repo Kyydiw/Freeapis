@@ -112,6 +112,33 @@ for (const slug of ['ai-gptoss120b', 'ai-phi2', 'ai-deepseekr1']) {
   paramSchemas[`legacy-query-${slug}`] = { query: aiChatQuery }
 }
 
+// Endpoints that fetch a remote file or page only accept http(s) URLs.
+const httpUrl = z
+  .string()
+  .trim()
+  .max(2_000)
+  .url()
+  .refine((value) => /^https?:\/\//i.test(value), 'must be an http(s) URL')
+const imageUrlSlugs = [
+  'tools-ocr', 'tools-nsfw-checker', 'tools-removebg', 'tools-remini',
+  'tools-blurface', 'tools-dewatermark', 'maker-gura',
+]
+for (const slug of imageUrlSlugs) {
+  paramSchemas[`legacy-query-${slug}`] = { query: z.object({ url: httpUrl }).strict() }
+}
+for (const slug of ['tools-ssweb', 'tools-yt-transcribe']) {
+  paramSchemas[`legacy-query-${slug}`] = { query: z.object({ url: httpUrl }).strict() }
+}
+paramSchemas['legacy-query-maker-musiccard'] = {
+  query: z
+    .object({
+      judul: z.string().trim().min(1).max(200),
+      nama: z.string().trim().min(1).max(200),
+      image_url: httpUrl,
+    })
+    .strict(),
+}
+
 paramSchemas['alight-motion-send-body'] = {
   query: z.object({}).strict(),
   body: z.object({ email: z.string().trim().email().max(254) }).strict(),

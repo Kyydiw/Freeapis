@@ -86,8 +86,8 @@ export const endpoints: ApiEndpoint[] = [
     errorCodes: [{ code: 400, name: 'BAD_REQUEST', description: 'The text parameter is missing.' }],
   },
   {
-    id: 'ai-tools-info',
-    category: 'ai',
+    id: 'tools-info',
+    category: 'tools',
     title: 'Tools Info',
     summary: 'Platform welcome and service metadata.',
     description:

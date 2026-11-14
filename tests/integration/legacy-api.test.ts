@@ -9,7 +9,7 @@ describe('migrated public API registry', () => {
     const body = await readJson(response)
     const endpoints = body.data.endpoints as Array<Record<string, unknown>>
 
-    expect(endpoints).toHaveLength(97)
+    expect(endpoints).toHaveLength(113)
     expect(endpoints.every((endpoint) => endpoint.auth === 'none' && endpoint.free === true)).toBe(true)
     expect(endpoints.some((endpoint) => endpoint.path === '/api/v1/search/applemusic')).toBe(true)
     expect(endpoints.some((endpoint) => endpoint.path === '/api/v1/maker/brat')).toBe(true)
@@ -23,6 +23,10 @@ describe('migrated public API registry', () => {
       '/api/v1/search/wikipedia',
       '/api/v1/search/npmjs',
       '/api/v1/search/capcut',
+      '/api/v1/ai/gita',
+      '/api/v1/tools/removebg',
+      '/api/v1/random/lahelu',
+      '/api/v1/maker/musiccard',
     ]) {
       expect(endpoints.some((endpoint) => endpoint.path === path)).toBe(true)
     }
@@ -155,5 +159,48 @@ describe('migrated public API registry', () => {
     const response = await app.request('/api/v1/search/applemusic')
     expect(response.status).toBe(400)
     expect(fake.calls).toHaveLength(0)
+  })
+
+  it('separates the AI and Tools categories', async () => {
+    const { app } = createTestApp()
+    const body = await readJson(await app.request('/api/v1/endpoints'))
+    const endpoints = body.data.endpoints as Array<{ path: string; category: string }>
+    const categoryOf = (path: string) => endpoints.find((endpoint) => endpoint.path === path)?.category
+
+    expect(categoryOf('/api/v1/ai/gemini')).toBe('ai')
+    expect(categoryOf('/api/v1/ai/powerbrain')).toBe('ai')
+    for (const path of ['/api/v1/tools/info', '/api/v1/tools/translate', '/api/v1/am/send', '/api/v1/tools/ocr']) {
+      expect(categoryOf(path)).toBe('tools')
+    }
+    expect(endpoints.filter((endpoint) => endpoint.path.startsWith('/api/v1/ai/')).every((e) => e.category === 'ai')).toBe(true)
+  })
+
+  it.each([
+    ['/api/v1/ai/gita?q=karma', 'https://api.siputzx.my.id/api/ai/gita?q=karma'],
+    ['/api/v1/ai/bibleai?question=faith&translation=ESV', 'https://api.siputzx.my.id/api/ai/bibleai?question=faith&translation=ESV'],
+    ['/api/v1/ai/powerbrain?text=halo', 'https://api.nexray.eu.cc/ai/powerbrain?text=halo'],
+    ['/api/v1/random/quotesanime', 'https://api.siputzx.my.id/api/r/quotesanime'],
+    ['/api/v1/news/ffnews', 'https://api.nexray.eu.cc/berita/ffnews'],
+    ['/api/v1/tools/ocr?url=https%3A%2F%2Fexample.com%2Fa.jpg', 'https://api.nexray.eu.cc/tools/ocr?url=https%3A%2F%2Fexample.com%2Fa.jpg'],
+  ])('routes %s upstream', async (publicUrl, upstream) => {
+    const fake = fakeProviderFetch(() => jsonResponse({ status: true, result: { ok: 1 } }))
+    const { app } = createTestApp({ fetchImpl: fake.fetchImpl })
+    const response = await app.request(publicUrl)
+    expect(response.status).toBe(200)
+    expect(fake.calls[0]?.url).toBe(upstream)
+  })
+
+  it('streams image tools as raw bytes and validates URLs', async () => {
+    const fake = fakeProviderFetch(
+      () => new Response(new Uint8Array([137, 80, 78, 71]), { status: 200, headers: { 'content-type': 'image/png' } }),
+    )
+    const { app } = createTestApp({ fetchImpl: fake.fetchImpl })
+    const ok = await app.request('/api/v1/tools/removebg?url=https%3A%2F%2Fexample.com%2Fa.jpg')
+    expect(ok.status).toBe(200)
+    expect(ok.headers.get('content-type')).toContain('image/png')
+    expect(fake.calls[0]?.url).toBe('https://api.nexray.eu.cc/tools/removebg?url=https%3A%2F%2Fexample.com%2Fa.jpg')
+    expect((await app.request('/api/v1/tools/removebg?url=not-a-url')).status).toBe(400)
+    expect((await app.request('/api/v1/tools/removebg?url=ftp%3A%2F%2Fexample.com%2Fa.jpg')).status).toBe(400)
+    expect((await app.request('/api/v1/maker/musiccard?judul=a&nama=b')).status).toBe(400)
   })
 })
