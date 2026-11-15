@@ -9,6 +9,12 @@ import { EndpointRow } from '@/components/api/EndpointRow'
 import { Reveal } from '@/components/motion/Reveal'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { EndpointBadge } from '@/components/api/EndpointBadge'
+import {
+  ApiCardSkeleton,
+  EndpointRowSkeleton,
+  Skeleton,
+  SkeletonRegion,
+} from '@/components/skeletons'
 import { cn } from '@/utils/cn'
 
 const PAGE_SIZE = 9
@@ -31,7 +37,7 @@ export default function ApiExplorerPage() {
   const [query, setQuery] = useState('')
   const [visible, setVisible] = useState(PAGE_SIZE)
   const [view, setView] = useState<ExplorerView>(loadViewPreference)
-  const { data, isLoading, isError, refetch } = useCatalog()
+  const { data, isPending, isFetching, isError, refetch } = useCatalog()
   const categories = data?.categories ?? []
   const endpoints = data?.endpoints ?? []
 
@@ -120,31 +126,53 @@ export default function ApiExplorerPage() {
               )}
             >
               All endpoints
-              <span className="font-mono text-[11px] opacity-70">{endpoints.length}</span>
+              {isPending ? (
+                <Skeleton className="h-3 w-6" />
+              ) : (
+                <span className="font-mono text-[11px] opacity-70">{endpoints.length}</span>
+              )}
             </button>
-            {categories.map((c) => {
-              const count = endpoints.filter((e) => e.category === c.id).length
-              return (
-                <button
-                  key={c.id}
-                  type="button"
-                  onClick={() => setCategory(c.id)}
-                  aria-current={activeCategory === c.id ? 'true' : undefined}
-                  className={cn(
-                    'flex items-center justify-between rounded-lg px-3 py-2.5 text-left font-body text-sm transition-colors',
-                    activeCategory === c.id
-                      ? 'bg-navy text-white'
-                      : 'text-ink hover:bg-paper-soft',
-                  )}
-                >
-                  <span className="flex min-w-0 items-center gap-2.5">
-                    <CategoryIcon slug={c.slug} label={c.name} className="h-6 w-6" />
-                    <span className="truncate">{c.name}</span>
-                  </span>
-                  <span className="font-mono text-[11px] opacity-70">{count}</span>
-                </button>
-              )
-            })}
+            {isPending ? (
+              <SkeletonRegion label="Loading categories" className="flex flex-col gap-0.5">
+                {Array.from({ length: 6 }, (_, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center justify-between rounded-lg px-3 py-2.5"
+                    aria-hidden="true"
+                  >
+                    <span className="flex items-center gap-2.5">
+                      <Skeleton className="h-6 w-6 rounded-lg" />
+                      <Skeleton className="h-3.5 w-24" />
+                    </span>
+                    <Skeleton className="h-3 w-6" />
+                  </div>
+                ))}
+              </SkeletonRegion>
+            ) : (
+              categories.map((c) => {
+                const count = endpoints.filter((e) => e.category === c.id).length
+                return (
+                  <button
+                    key={c.id}
+                    type="button"
+                    onClick={() => setCategory(c.id)}
+                    aria-current={activeCategory === c.id ? 'true' : undefined}
+                    className={cn(
+                      'flex items-center justify-between rounded-lg px-3 py-2.5 text-left font-body text-sm transition-colors',
+                      activeCategory === c.id
+                        ? 'bg-navy text-white'
+                        : 'text-ink hover:bg-paper-soft',
+                    )}
+                  >
+                    <span className="flex min-w-0 items-center gap-2.5">
+                      <CategoryIcon slug={c.slug} label={c.name} className="h-6 w-6" />
+                      <span className="truncate">{c.name}</span>
+                    </span>
+                    <span className="font-mono text-[11px] opacity-70">{count}</span>
+                  </button>
+                )
+              })
+            )}
           </nav>
 
           <div className="mt-6 rounded-xl border border-line bg-paper-raised p-4">
@@ -185,29 +213,39 @@ export default function ApiExplorerPage() {
           )}
 
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-            <p className="flex flex-wrap items-center gap-x-2 font-mono text-xs text-ink-soft">
-              <span>
-                {filtered.length} endpoint{filtered.length === 1 ? '' : 's'}
-              </span>
-              {activeCategory !== 'all' && (
+            {isPending ? (
+              <Skeleton className="h-3.5 w-36" />
+            ) : (
+              <p className="flex flex-wrap items-center gap-x-2 font-mono text-xs text-ink-soft">
                 <span>
-                  · <span className="text-ink">{activeCategoryData?.name ?? activeCategory}</span>
+                  {filtered.length} endpoint{filtered.length === 1 ? '' : 's'}
                 </span>
-              )}
-              {query && (
-                <span className="inline-flex items-center gap-1.5 rounded-md border border-line-muted bg-paper px-2 py-0.5">
-                  “{query}”
-                  <button
-                    type="button"
-                    onClick={clearQuery}
-                    aria-label="Clear search query"
-                    className="text-ink-soft transition-colors hover:text-ink"
-                  >
-                    <X size={11} aria-hidden="true" />
-                  </button>
-                </span>
-              )}
-            </p>
+                {activeCategory !== 'all' && (
+                  <span>
+                    · <span className="text-ink">{activeCategoryData?.name ?? activeCategory}</span>
+                  </span>
+                )}
+                {query && (
+                  <span className="inline-flex items-center gap-1.5 rounded-md border border-line-muted bg-paper px-2 py-0.5">
+                    “{query}”
+                    <button
+                      type="button"
+                      onClick={clearQuery}
+                      aria-label="Clear search query"
+                      className="text-ink-soft transition-colors hover:text-ink"
+                    >
+                      <X size={11} aria-hidden="true" />
+                    </button>
+                  </span>
+                )}
+                {isFetching && (
+                  <span className="inline-flex items-center gap-1.5 text-cobalt" title="Refreshing catalog">
+                    <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-cobalt" aria-hidden="true" />
+                    refreshing
+                  </span>
+                )}
+              </p>
+            )}
 
             <div
               role="group"
@@ -237,20 +275,22 @@ export default function ApiExplorerPage() {
             </div>
           </div>
 
-          {isLoading ? (
-            view === 'grid' ? (
-              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                {Array.from({ length: 6 }, (_, index) => (
-                  <div key={index} className="h-[172px] animate-pulse rounded-2xl border border-line bg-paper-raised" />
-                ))}
-              </div>
-            ) : (
-              <div className="overflow-hidden rounded-2xl border border-line bg-paper-raised">
-                {Array.from({ length: 8 }, (_, index) => (
-                  <div key={index} className="h-[52px] animate-pulse border-b border-line-muted last:border-0" />
-                ))}
-              </div>
-            )
+          {isPending ? (
+            <SkeletonRegion label="Loading endpoints">
+              {view === 'grid' ? (
+                <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                  {Array.from({ length: 6 }, (_, index) => (
+                    <ApiCardSkeleton key={index} />
+                  ))}
+                </div>
+              ) : (
+                <div className="overflow-hidden rounded-2xl border border-line bg-paper-raised">
+                  {Array.from({ length: 8 }, (_, index) => (
+                    <EndpointRowSkeleton key={index} />
+                  ))}
+                </div>
+              )}
+            </SkeletonRegion>
           ) : isError ? (
             <div className="rounded-2xl border border-dashed border-line bg-paper-soft py-16 text-center">
               <p className="font-body text-sm font-semibold text-ink">The catalog could not be loaded</p>

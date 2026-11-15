@@ -1,8 +1,8 @@
 import { createContext, useContext, useEffect, useMemo, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { CategoryIcon } from '@/components/categories/CategoryIcon'
 import { ArrowUpRight, FileText } from 'lucide-react'
 import { useSearch } from '@/hooks/useSearch'
-import { useTransitionNavigate } from '@/components/motion/PageTransition'
 import { Input } from './Input'
 import { EndpointBadge } from '@/components/api/EndpointBadge'
 
@@ -23,8 +23,8 @@ export function useSearchDialog(): SearchContextValue {
 }
 
 export function SearchDialogOverlay() {
-  const { query, setQuery, results, open, closeDialog, categoryName } = useSearchDialog()
-  const go = useTransitionNavigate()
+  const { query, setQuery, results, open, closeDialog, categoryName, catalogPending } = useSearchDialog()
+  const navigate = useNavigate()
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
@@ -39,7 +39,7 @@ export function SearchDialogOverlay() {
   const openEndpoint = (path: string) => {
     closeDialog()
     setQuery('')
-    go(path)
+    navigate(path)
   }
 
   return (
@@ -82,7 +82,14 @@ export function SearchDialogOverlay() {
 
           {query.trim() && results.length === 0 && (
             <div className="px-3 py-8 text-center">
-              <p className="font-body text-sm text-ink-soft">No endpoints match “{query}”.</p>
+              {catalogPending ? (
+                <p className="flex items-center justify-center gap-2 font-mono text-xs text-ink-soft">
+                  <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-cobalt" aria-hidden="true" />
+                  Loading endpoint catalog…
+                </p>
+              ) : (
+                <p className="font-body text-sm text-ink-soft">No endpoints match “{query}”.</p>
+              )}
             </div>
           )}
 

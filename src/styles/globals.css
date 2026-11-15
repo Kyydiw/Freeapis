@@ -208,75 +208,57 @@ body::-webkit-scrollbar-thumb:hover {
   background: #3a4660;
 }
 
-.motion-curtain {
-  --curtain-cap: clamp(64px, 14vh, 150px);
-  position: fixed;
-  inset: 0;
-  z-index: 1000;
-  display: grid;
-  place-items: center;
-  background: var(--navy);
-  color: #fff;
+/* ------------------------------------------------------------------ */
+/* Skeleton system — content-aware loading placeholders.               */
+/* Light surfaces sit on paper tones; `.skeleton-dark` targets the     */
+/* navy console panels. The shimmer is a single compositor-friendly    */
+/* transform on the ::after overlay, so it never causes layout shifts. */
+/* ------------------------------------------------------------------ */
+.skeleton {
+  position: relative;
   overflow: hidden;
-  pointer-events: none;
-  clip-path: ellipse(150% 150% at 50% 250%);
-  will-change: clip-path;
-  contain: layout paint;
+  background-color: var(--line-muted);
+  border-radius: 6px;
 }
 
-.motion-curtain.is-panel {
-  top: calc(var(--curtain-cap) * -1);
-  bottom: calc(var(--curtain-cap) * -1);
-  clip-path: none;
-  visibility: hidden;
-  border-radius: 50% / var(--curtain-cap);
+.skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background-image: linear-gradient(
+    90deg,
+    transparent,
+    rgba(253, 252, 249, 0.7),
+    transparent
+  );
+  animation: ky-skeleton-shimmer 1.6s ease-in-out infinite;
   will-change: transform;
 }
 
-.motion-curtain-word {
-  font-family: 'Space Grotesk', system-ui, sans-serif;
-  font-size: clamp(32px, 5.2vw, 68px);
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  opacity: 0;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3em;
+.skeleton-dark {
+  background-color: var(--navy-border);
 }
 
-.motion-curtain-word::before {
-  content: '';
-  width: 0.14em;
-  height: 0.14em;
-  border-radius: 50%;
-  background: var(--cobalt);
-  flex: 0 0 auto;
+.skeleton-dark::after {
+  background-image: linear-gradient(
+    90deg,
+    transparent,
+    rgba(140, 152, 190, 0.16),
+    transparent
+  );
 }
 
-.motion-curtain > i {
-  position: absolute;
-  left: max(24px, env(safe-area-inset-left, 0px));
-  bottom: max(28px, env(safe-area-inset-bottom, 0px));
-  font-family: 'JetBrains Mono', ui-monospace, monospace;
-  font-style: normal;
-  font-size: 10px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: #a6acbf;
+@keyframes ky-skeleton-shimmer {
+  100% {
+    transform: translateX(100%);
+  }
 }
 
-.motion-curtain.is-panel > i {
-  bottom: calc(max(28px, env(safe-area-inset-bottom, 0px)) + var(--curtain-cap));
-}
-
-html.is-intro .motion-curtain {
-  clip-path: ellipse(150% 150% at 50% 100%);
-  pointer-events: auto;
-}
-
-html.is-intro .motion-curtain.is-panel {
-  clip-path: none;
-  visibility: visible;
+@media (prefers-reduced-motion: reduce) {
+  .skeleton::after {
+    animation: none;
+  }
 }
 
 .footer-curved {
@@ -299,9 +281,6 @@ html.is-intro .motion-curtain.is-panel {
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
-  }
-  .motion-curtain {
-    display: none !important;
   }
   *,
   *::before,

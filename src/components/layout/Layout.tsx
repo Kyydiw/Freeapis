@@ -1,7 +1,10 @@
 import { Navbar } from './Navbar'
 import { Footer } from './Footer'
+import { useRouteEnter } from '@/animations/routeEnter'
 
 export function Layout({ children }: { children: React.ReactNode }) {
+  useRouteEnter()
+
   return (
     <div className="flex min-h-screen flex-col bg-paper">
       <a

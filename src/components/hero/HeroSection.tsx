@@ -1,12 +1,11 @@
 import { useEffect, useRef } from 'react'
+import { Link } from 'react-router-dom'
 import { ArrowUpRight, BookOpen } from 'lucide-react'
 import { HeroArtwork } from './HeroArtwork'
 import { LiveApiConsole } from './LiveApiConsole'
 import { buildHeroTimeline, buildAmbientMotion } from '@/animations/hero.animation'
 import { initScrollScenes } from '@/animations/scroll.animation'
 import { gsap, MQ } from '@/animations/gsap.setup'
-import { onPageReady } from '@/animations/pageState'
-import { TLink } from '@/components/motion/PageTransition'
 import { site } from '@/config/site'
 
 export function HeroSection() {
@@ -30,14 +29,13 @@ export function HeroSection() {
           artwork: artRef.current,
           cubes,
           console: consoleRef.current,
-          animateNav: document.documentElement.classList.contains('is-intro'),
+          animateNav: false,
         })
-        const cancelWait = onPageReady(() => timeline?.play())
+        timeline?.play()
         const ambient = buildAmbientMotion({ cubes, orbit: null })
         const scenes = initScrollScenes(root)
 
         return () => {
-          cancelWait()
           timeline?.kill()
           ambient.forEach((tl) => tl.kill())
           scenes?.revert()
@@ -82,13 +80,13 @@ export function HeroSection() {
             </p>
 
             <div data-enter className="mt-7 flex flex-wrap items-center gap-4 md:gap-5">
-              <TLink to="/apis" className="btn-primary">
+              <Link to="/apis" className="btn-primary">
                 Explore APIs <ArrowUpRight size={17} />
-              </TLink>
-              <TLink to="/docs" className="btn-outline-paper">
+              </Link>
+              <Link to="/docs" className="btn-outline-paper">
                 <BookOpen size={19} strokeWidth={2.2} />
                 Read Documentation
-              </TLink>
+              </Link>
             </div>
           </div>
 

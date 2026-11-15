@@ -1,6 +1,7 @@
 import { Activity, AlertTriangle, CheckCircle2, Clock, Wrench } from 'lucide-react'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { usePlatformStatus } from '@/hooks/useCatalog'
+import { StatusDashboardSkeleton, SkeletonRegion } from '@/components/skeletons'
 import { cn } from '@/utils/cn'
 
 const statusMeta = {
@@ -22,7 +23,7 @@ const incidentBadge = {
 } as const
 
 export default function StatusPage() {
-  const { data, isLoading, isError, refetch } = usePlatformStatus()
+  const { data, isPending, isFetching, isError, refetch } = usePlatformStatus()
 
   if (isError && !data) {
     return (
@@ -42,25 +43,6 @@ export default function StatusPage() {
     )
   }
 
-  if (isLoading || !data) {
-    return (
-      <PageContainer className="py-10 md:py-14">
-        <p data-enter className="eyebrow">STATUS</p>
-        <h1 data-enter className="mt-3 font-display text-[36px] font-bold leading-[1.08] text-ink md:text-[44px]">
-          All systems, at a glance.
-        </h1>
-        <div className="mt-10 flex items-center gap-3 text-ink-soft">
-          <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-cobalt" />
-          <span className="font-mono text-sm">Loading platform status…</span>
-        </div>
-      </PageContainer>
-    )
-  }
-
-  const groups = data.serviceGroups
-  const incidents = data.incidents
-  const degradedCount = groups.filter((g) => g.status !== 'operational').length
-
   return (
     <PageContainer className="py-10 md:py-14">
       <div className="mb-8">
@@ -74,9 +56,33 @@ export default function StatusPage() {
             live platform metrics
           </span>{' '}
           aggregated from real request telemetry.
+          {data && isFetching && (
+            <span className="ml-2 inline-flex items-center gap-1.5 align-middle font-mono text-xs text-cobalt">
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-cobalt" aria-hidden="true" />
+              refreshing
+            </span>
+          )}
         </p>
       </div>
 
+      {isPending || !data ? (
+        <SkeletonRegion label="Loading platform status">
+          <StatusDashboardSkeleton />
+        </SkeletonRegion>
+      ) : (
+        <StatusDashboard data={data} />
+      )}
+    </PageContainer>
+  )
+}
+
+function StatusDashboard({ data }: { data: NonNullable<ReturnType<typeof usePlatformStatus>['data']> }) {
+  const groups = data.serviceGroups
+  const incidents = data.incidents
+  const degradedCount = groups.filter((g) => g.status !== 'operational').length
+
+  return (
+    <div data-enter>
       <div className="grid gap-4 sm:grid-cols-3">
         <div className="rounded-2xl border border-line bg-paper-raised p-5">
           <div className="flex items-center gap-2.5">
@@ -206,6 +212,6 @@ export default function StatusPage() {
       <p className="mt-10 rounded-xl border border-dashed border-line bg-paper-soft px-4 py-3 text-center font-mono text-[11px] text-ink-soft">
         live data · generated from platform telemetry
       </p>
-    </PageContainer>
+    </div>
   )
 }

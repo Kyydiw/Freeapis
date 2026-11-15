@@ -1,4 +1,4 @@
-import { TLink } from '@/components/motion/PageTransition'
+import { Link } from 'react-router-dom'
 import { ArrowUpRight } from 'lucide-react'
 import { EndpointBadge } from './EndpointBadge'
 import type { ApiEndpoint } from '@/services/api/api.types'
@@ -10,7 +10,7 @@ import type { ApiEndpoint } from '@/services/api/api.types'
  */
 export function EndpointRow({ endpoint }: { endpoint: ApiEndpoint }) {
   return (
-    <TLink
+    <Link
       to={`/apis/${endpoint.category}/${endpoint.id}`}
       className="group flex items-center gap-3 border-b border-line-muted px-4 py-3 transition-colors last:border-0 hover:bg-paper focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-cobalt"
     >
@@ -29,6 +29,6 @@ export function EndpointRow({ endpoint }: { endpoint: ApiEndpoint }) {
         className="shrink-0 text-ink-soft transition-colors group-hover:text-cobalt"
         aria-hidden="true"
       />
-    </TLink>
+    </Link>
   )
 }

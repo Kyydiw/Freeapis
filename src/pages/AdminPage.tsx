@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { createClient, type Session } from '@supabase/supabase-js'
 import {
   Activity,
@@ -17,6 +17,12 @@ import {
   Zap,
 } from 'lucide-react'
 import { PageContainer } from '@/components/layout/PageContainer'
+import {
+  AdminOverviewSkeleton,
+  AdminRowsSkeleton,
+  Skeleton,
+  SkeletonRegion,
+} from '@/components/skeletons'
 import { environment } from '@/config/environment'
 import { cn } from '@/utils/cn'
 
@@ -139,10 +145,22 @@ export default function AdminPage() {
   if (checking) {
     return (
       <PageContainer className="py-16">
-        <div className="flex items-center justify-center gap-3 text-ink-soft">
-          <Loader2 size={18} className="animate-spin" />
-          <span className="font-mono text-sm">Checking session…</span>
-        </div>
+        <SkeletonRegion label="Checking session" className="mx-auto w-full max-w-sm">
+          <div
+            className="rounded-2xl border border-line bg-paper-raised p-8"
+            aria-hidden="true"
+          >
+            <div className="flex items-center gap-2.5">
+              <Skeleton circle width={20} height={20} />
+              <Skeleton className="h-5 w-44" />
+            </div>
+            <div className="mt-6 flex flex-col gap-4">
+              <Skeleton className="h-11 w-full rounded-[10px]" />
+              <Skeleton className="h-11 w-full rounded-[10px]" />
+              <Skeleton className="h-12 w-full rounded-xl" />
+            </div>
+          </div>
+        </SkeletonRegion>
       </PageContainer>
     )
   }
@@ -301,6 +319,18 @@ async function adminFetch<T>(
   return payload as T
 }
 
+/**
+ * Panel data source that separates the two loading situations the admin
+ * dashboard actually has:
+ *
+ * - `initialLoading` — nothing has been fetched yet: the panel renders
+ *   its content-aware skeleton.
+ * - `refreshing` — data is on screen and a reload is in flight: the data
+ *   stays visible with a subtle inline indicator.
+ *
+ * A failed refresh keeps the previous data and surfaces `error`, so a
+ * single hiccup never blanks the dashboard.
+ */
 function useAdminResource<T>(
   client: SupabaseBrowserClient,
   session: Session,
@@ -309,47 +339,98 @@ function useAdminResource<T>(
 ) {
   const [data, setData] = useState<T | null>(null)
   const [error, setError] = useState('')
-  const [loading, setLoading] = useState(true)
+  const [initialLoading, setInitialLoading] = useState(true)
+  const [refreshing, setRefreshing] = useState(false)
+  const dataRef = useRef<T | null>(null)
+  // Panels pass `pick` as an inline arrow, so it changes identity every
+  // render. Keeping it in a ref keeps `reload` stable and prevents the
+  // fetch effect from re-firing on every render.
+  const pickRef = useRef(pick)
+  pickRef.current = pick
 
   const reload = useCallback(async () => {
-    setLoading(true)
+    const hasData = dataRef.current !== null
     setError('')
+    setRefreshing(true)
+    if (!hasData) setInitialLoading(true)
     try {
-      setData(pick(await adminFetch(client, session, path)))
+      const next = pickRef.current(await adminFetch(client, session, path))
+      dataRef.current = next
+      setData(next)
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : 'Request failed')
     } finally {
-      setLoading(false)
+      setInitialLoading(false)
+      setRefreshing(false)
     }
-  }, [client, session, path, pick])
+  }, [client, session, path])
 
   useEffect(() => {
+    dataRef.current = null
+    setData(null)
+    setInitialLoading(true)
     void reload()
   }, [reload])
 
-  return { data, error, loading, reload, setData }
+  return { data, error, initialLoading: initialLoading && data === null, refreshing, reload, setData }
 }
 
-function PanelState({ loading, error, onRetry }: { loading: boolean; error: string; onRetry: () => void }) {
-  if (loading) {
-    return (
-      <div className="flex items-center gap-3 rounded-2xl border border-line bg-paper-raised p-8 text-ink-soft">
-        <Loader2 size={17} className="animate-spin" />
-        <span className="font-mono text-sm">Loading…</span>
-      </div>
-    )
+type AdminResource<T> = ReturnType<typeof useAdminResource<T>>
+
+/**
+ * Shared panel chrome: skeleton while the first load runs, error card with
+ * retry when there is nothing to show, and data plus a quiet refresh/error
+ * notice once content exists.
+ */
+function PanelFrame<T>({
+  resource,
+  skeleton,
+  children,
+}: {
+  resource: AdminResource<T>
+  skeleton: React.ReactNode
+  children: React.ReactNode
+}) {
+  const { data, error, initialLoading, refreshing, reload } = resource
+
+  if (initialLoading) {
+    return <SkeletonRegion label="Loading panel data">{skeleton}</SkeletonRegion>
   }
-  if (error) {
+
+  if (error && !data) {
     return (
       <div className="rounded-2xl border border-signal/40 bg-signal/5 p-8 text-center">
         <p className="font-mono text-sm text-signal">{error}</p>
-        <button onClick={onRetry} className="btn-primary mx-auto mt-4 h-10 px-4 text-xs">
+        <button onClick={reload} className="btn-primary mx-auto mt-4 h-10 px-4 text-xs">
           <RefreshCw size={14} /> Retry
         </button>
       </div>
     )
   }
-  return null
+
+  return (
+    <div className="flex flex-col gap-4">
+      {(refreshing || error) && (
+        <div
+          className="flex items-center gap-2.5 rounded-xl border border-line bg-paper-soft px-4 py-2"
+          role="status"
+        >
+          {refreshing ? (
+            <>
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-cobalt" aria-hidden="true" />
+              <span className="font-mono text-xs text-ink-soft">refreshing…</span>
+            </>
+          ) : (
+            <>
+              <AlertTriangle size={13} className="text-signal" aria-hidden="true" />
+              <span className="font-mono text-xs text-signal">refresh failed: {error}</span>
+            </>
+          )}
+        </div>
+      )}
+      {children}
+    </div>
+  )
 }
 
 function StatCard({ icon: Icon, label, value, hint }: { icon: typeof Activity; label: string; value: string; hint?: string }) {
@@ -366,16 +447,16 @@ function StatCard({ icon: Icon, label, value, hint }: { icon: typeof Activity; l
 }
 
 function OverviewPanel({ client, session }: { client: SupabaseBrowserClient; session: Session }) {
-  const { data, error, loading, reload } = useAdminResource<Analytics | null>(
+  const resource = useAdminResource<Analytics | null>(
     client,
     session,
     '/analytics',
     (payload) => (payload as unknown as Analytics) ?? null,
   )
+  const data = resource.data
 
   return (
-    <div className="flex flex-col gap-6">
-      <PanelState loading={loading} error={error} onRetry={reload} />
+    <PanelFrame resource={resource} skeleton={<AdminOverviewSkeleton />}>
       {data && (
         <>
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -435,32 +516,32 @@ function OverviewPanel({ client, session }: { client: SupabaseBrowserClient; ses
           </div>
         </>
       )}
-    </div>
+    </PanelFrame>
   )
 }
 
 function EndpointsPanel({ client, session }: { client: SupabaseBrowserClient; session: Session }) {
-  const { data, error, loading, reload } = useAdminResource<EndpointAdminRow[]>(
+  const resource = useAdminResource<EndpointAdminRow[]>(
     client,
     session,
     '/endpoints',
     (payload) => ((payload as { endpoints?: EndpointAdminRow[] }).endpoints ?? []),
   )
+  const data = resource.data
   const [busyId, setBusyId] = useState('')
 
   const patch = async (id: string, body: Record<string, unknown>) => {
     setBusyId(id)
     try {
       await adminFetch(client, session, `/endpoints/${id}`, { method: 'PATCH', body })
-      await reload()
+      await resource.reload()
     } finally {
       setBusyId('')
     }
   }
 
   return (
-    <div className="flex flex-col gap-4">
-      <PanelState loading={loading} error={error} onRetry={reload} />
+    <PanelFrame resource={resource} skeleton={<AdminRowsSkeleton rows={5} variant="endpoint" />}>
       {data && data.length === 0 && (
         <p className="rounded-2xl border border-dashed border-line bg-paper-soft p-8 text-center font-body text-sm text-ink-soft">
           No endpoints registered yet.
@@ -520,32 +601,37 @@ function EndpointsPanel({ client, session }: { client: SupabaseBrowserClient; se
           </div>
         </div>
       ))}
-    </div>
+    </PanelFrame>
   )
 }
 
 function CategoriesPanel({ client, session }: { client: SupabaseBrowserClient; session: Session }) {
-  const { data, error, loading, reload } = useAdminResource<CategoryAdminRow[]>(
+  const resource = useAdminResource<CategoryAdminRow[]>(
     client,
     session,
     '/categories',
     (payload) => ((payload as { categories?: CategoryAdminRow[] }).categories ?? []),
   )
+  const data = resource.data
   const [busyId, setBusyId] = useState('')
 
   const patch = async (id: string, body: Record<string, unknown>) => {
     setBusyId(id)
     try {
       await adminFetch(client, session, `/categories/${id}`, { method: 'PATCH', body })
-      await reload()
+      await resource.reload()
     } finally {
       setBusyId('')
     }
   }
 
   return (
-    <div className="flex flex-col gap-4">
-      <PanelState loading={loading} error={error} onRetry={reload} />
+    <PanelFrame resource={resource} skeleton={<AdminRowsSkeleton rows={4} variant="category" />}>
+      {data && data.length === 0 && (
+        <p className="rounded-2xl border border-dashed border-line bg-paper-soft p-8 text-center font-body text-sm text-ink-soft">
+          No categories registered yet.
+        </p>
+      )}
       {data?.map((row) => (
         <div key={row.id} className="flex flex-wrap items-center gap-4 rounded-2xl border border-line bg-paper-raised p-5">
           <div className="min-w-0">
@@ -579,26 +665,31 @@ function CategoriesPanel({ client, session }: { client: SupabaseBrowserClient; s
           {busyId === row.id && <Loader2 size={15} className="animate-spin text-cobalt" />}
         </div>
       ))}
-    </div>
+    </PanelFrame>
   )
 }
 
 function ProvidersPanel({ client, session }: { client: SupabaseBrowserClient; session: Session }) {
-  const { data, error, loading, reload } = useAdminResource<ProviderAdminRow[]>(
+  const resource = useAdminResource<ProviderAdminRow[]>(
     client,
     session,
     '/providers',
     (payload) => ((payload as { providers?: ProviderAdminRow[] }).providers ?? []),
   )
+  const data = resource.data
 
   const toggle = async (id: string, isActive: boolean) => {
     await adminFetch(client, session, `/providers/${id}`, { method: 'PATCH', body: { isActive } })
-    await reload()
+    await resource.reload()
   }
 
   return (
-    <div className="flex flex-col gap-4">
-      <PanelState loading={loading} error={error} onRetry={reload} />
+    <PanelFrame resource={resource} skeleton={<AdminRowsSkeleton rows={4} variant="provider" />}>
+      {data && data.length === 0 && (
+        <p className="rounded-2xl border border-dashed border-line bg-paper-soft p-8 text-center font-body text-sm text-ink-soft">
+          No providers registered yet.
+        </p>
+      )}
       {data?.map((row) => (
         <div key={row.id} className="flex flex-wrap items-center gap-4 rounded-2xl border border-line bg-paper-raised p-5">
           <Database size={18} className="text-cobalt" />
@@ -620,26 +711,26 @@ function ProvidersPanel({ client, session }: { client: SupabaseBrowserClient; se
           </label>
         </div>
       ))}
-    </div>
+    </PanelFrame>
   )
 }
 
 function IncidentsPanel({ client, session }: { client: SupabaseBrowserClient; session: Session }) {
-  const { data, error, loading, reload } = useAdminResource<IncidentAdminRow[]>(
+  const resource = useAdminResource<IncidentAdminRow[]>(
     client,
     session,
     '/incidents',
     (payload) => ((payload as { incidents?: IncidentAdminRow[] }).incidents ?? []),
   )
+  const data = resource.data
 
   const resolve = async (id: string) => {
     await adminFetch(client, session, `/incidents/${id}/resolve`, { method: 'PATCH' })
-    await reload()
+    await resource.reload()
   }
 
   return (
-    <div className="flex flex-col gap-4">
-      <PanelState loading={loading} error={error} onRetry={reload} />
+    <PanelFrame resource={resource} skeleton={<AdminRowsSkeleton rows={3} variant="incident" />}>
       {data && data.length === 0 && (
         <div className="rounded-2xl border border-dashed border-line bg-paper-soft p-8 text-center">
           <CheckCircle2 size={20} className="mx-auto text-success" />
@@ -670,7 +761,7 @@ function IncidentsPanel({ client, session }: { client: SupabaseBrowserClient; se
           <p className="mt-3 font-body text-sm leading-relaxed text-ink-soft">{row.message}</p>
         </div>
       ))}
-    </div>
+    </PanelFrame>
   )
 }
 

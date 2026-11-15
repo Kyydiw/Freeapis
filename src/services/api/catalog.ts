@@ -116,8 +116,8 @@ function mapEndpoint(dto: CatalogEndpointDto): ApiEndpoint {
   }
 }
 
-async function envelopeData<T>(path: string): Promise<T> {
-  const response = await request<EnvelopeBody<T>>({ method: 'GET', path })
+async function envelopeData<T>(path: string, signal?: AbortSignal): Promise<T> {
+  const response = await request<EnvelopeBody<T>>({ method: 'GET', path, signal })
   const body = response.data
   if (!body || body.status !== 'success' || body.data === undefined) {
     throw new ApiError(response.status, `The ${path} response could not be read.`)
@@ -125,10 +125,10 @@ async function envelopeData<T>(path: string): Promise<T> {
   return body.data
 }
 
-export async function fetchCatalog(): Promise<CatalogSnapshot> {
+export async function fetchCatalog(signal?: AbortSignal): Promise<CatalogSnapshot> {
   const [categoryPayload, endpointPayload] = await Promise.all([
-    envelopeData<{ categories: CatalogCategoryDto[] }>('/api/v1/categories'),
-    envelopeData<{ endpoints: CatalogEndpointDto[] }>('/api/v1/endpoints'),
+    envelopeData<{ categories: CatalogCategoryDto[] }>('/api/v1/categories', signal),
+    envelopeData<{ endpoints: CatalogEndpointDto[] }>('/api/v1/endpoints', signal),
   ])
   return {
     categories: categoryPayload.categories.map(mapCategory),
@@ -136,8 +136,8 @@ export async function fetchCatalog(): Promise<CatalogSnapshot> {
   }
 }
 
-export async function fetchStatus(): Promise<StatusSnapshot> {
-  const dto = await envelopeData<StatusDto>('/api/v1/status')
+export async function fetchStatus(signal?: AbortSignal): Promise<StatusSnapshot> {
+  const dto = await envelopeData<StatusDto>('/api/v1/status', signal)
   return {
     overall: dto.overall,
     uptimePercent: dto.uptimePercent,

@@ -1,10 +1,9 @@
 import { useEffect, useRef } from 'react'
-import { TLink } from '@/components/motion/PageTransition'
+import { Link } from 'react-router-dom'
 import { ArrowUpRight } from 'lucide-react'
 import { Logo } from '@/components/ui/Logo'
 import { SatelliteArtwork } from './SatelliteArtwork'
 import { gsap, ScrollTrigger, MQ } from '@/animations/gsap.setup'
-import { onPageReady } from '@/animations/pageState'
 import { site } from '@/config/site'
 
 export function Footer() {
@@ -75,38 +74,36 @@ export function Footer() {
         },
       })
 
-      const cancelWait = onPageReady(() => {
-        const tl = gsap.timeline({
-          defaults: { ease: 'power3.out' },
-          scrollTrigger: { trigger: scope, start: 'top 88%', once: true },
-        })
-
-        tl.to(items, {
-          autoAlpha: 1,
-          y: 0,
-          duration: 0.6,
-          stagger: 0.1,
-          clearProps: 'transform,opacity,visibility',
-        })
-
-        if (satellite) {
-          tl.to(
-            satellite,
-            {
-              autoAlpha: 1,
-              y: 0,
-              scale: 1,
-              duration: 0.9,
-              ease: 'power2.out',
-              clearProps: 'transform,opacity,visibility',
-            },
-            0.15,
-          )
-        }
+      const reveal = gsap.timeline({
+        defaults: { ease: 'power3.out' },
+        scrollTrigger: { trigger: scope, start: 'top 88%', once: true },
       })
 
+      reveal.to(items, {
+        autoAlpha: 1,
+        y: 0,
+        duration: 0.6,
+        stagger: 0.1,
+        clearProps: 'transform,opacity,visibility',
+      })
+
+      if (satellite) {
+        reveal.to(
+          satellite,
+          {
+            autoAlpha: 1,
+            y: 0,
+            scale: 1,
+            duration: 0.9,
+            ease: 'power2.out',
+            clearProps: 'transform,opacity,visibility',
+          },
+          0.15,
+        )
+      }
+
       return () => {
-        cancelWait()
+        reveal.kill()
         monitor.kill()
         ambient.forEach((tween) => tween.kill())
       }
@@ -135,9 +132,9 @@ export function Footer() {
           </div>
 
           <div data-footer-reveal className="footer-action">
-            <TLink to="/apis" className="btn-primary footer-button">
+            <Link to="/apis" className="btn-primary footer-button">
               Start building <ArrowUpRight size={17} />
-            </TLink>
+            </Link>
           </div>
 
           <div data-satellite className="footer-art" aria-hidden="true">
@@ -148,16 +145,16 @@ export function Footer() {
 
       <div className="footer-bottom relative z-[1]">
         <div className="shell footer-bottom-inner">
-          <TLink to="/" aria-label="Kyyinfinite home" className="footer-brand">
+          <Link to="/" aria-label="Kyyinfinite home" className="footer-brand">
             <Logo dark />
-          </TLink>
+          </Link>
 
           <nav className="footer-nav" aria-label="Footer">
-            <TLink to="/apis">APIs</TLink>
+            <Link to="/apis">APIs</Link>
             <span>·</span>
-            <TLink to="/docs">Documentation</TLink>
+            <Link to="/docs">Documentation</Link>
             <span>·</span>
-            <TLink to="/status">Status</TLink>
+            <Link to="/status">Status</Link>
           </nav>
 
           <p className="footer-copyright">{site.copyright}</p>

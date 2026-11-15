@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { TLink } from '@/components/motion/PageTransition'
+import { Link } from 'react-router-dom'
 import { BookOpen, Link2, Menu, Search, X } from 'lucide-react'
 import { CodeBlock } from '@/components/code/CodeBlock'
 import { DataTable } from '@/components/ui/DataTable'
@@ -225,9 +225,9 @@ export default function DocumentationPage() {
               Every documented endpoint has a preset. Load one and fire a live request in seconds —
               no setup, no API key.
             </p>
-            <TLink to="/playground" className="btn-primary mt-5 h-12 px-6 text-sm">
+            <Link to="/playground" className="btn-primary mt-5 h-12 px-6 text-sm">
               Open Playground
-            </TLink>
+            </Link>
           </div>
         </div>
 

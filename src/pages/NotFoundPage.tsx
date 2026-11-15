@@ -1,4 +1,4 @@
-import { TLink } from '@/components/motion/PageTransition'
+import { Link } from 'react-router-dom'
 import { PageContainer } from '@/components/layout/PageContainer'
 
 export default function NotFoundPage() {
@@ -11,9 +11,9 @@ export default function NotFoundPage() {
       <p data-enter className="mt-4 max-w-[440px] font-body text-[16px] leading-[1.6] text-ink-soft">
         The page you are looking for does not exist in the Kyyinfinite ecosystem.
       </p>
-      <TLink to="/" className="btn-primary mt-8">
+      <Link to="/" className="btn-primary mt-8">
         Back to home
-      </TLink>
+      </Link>
     </PageContainer>
   )
 }

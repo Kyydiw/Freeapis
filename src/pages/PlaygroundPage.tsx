@@ -7,13 +7,14 @@ import { ResponsePanel } from '@/components/playground/ResponsePanel'
 import { SnippetPanel } from '@/components/playground/SnippetPanel'
 import { RequestHistory } from '@/components/api/RequestHistory'
 import { PageContainer } from '@/components/layout/PageContainer'
+import { PlaygroundSkeleton, SkeletonRegion } from '@/components/skeletons'
 import { environment } from '@/config/environment'
 import { site } from '@/config/site'
 
 export default function PlaygroundPage() {
   const [searchParams] = useSearchParams()
   const presetId = searchParams.get('endpoint')
-  const { data } = useCatalog()
+  const { data, isPending } = useCatalog()
   const endpoints = data?.endpoints ?? []
   const categories = data?.categories ?? []
   const playground = usePlaygroundRequest(endpoints)
@@ -47,12 +48,20 @@ export default function PlaygroundPage() {
 
       <div className="grid min-w-0 grid-cols-1 gap-8 lg:grid-cols-2">
         <div className="flex min-w-0 flex-col gap-6">
-          <RequestComposer playground={playground} endpoints={endpoints} categories={categories} />
-          <SnippetPanel
-            config={playground.config}
-            baseUrl={environment.apiBaseUrl || site.url}
-            binaryMode={playground.binaryMode}
-          />
+          {isPending ? (
+            <SkeletonRegion label="Loading endpoint catalog">
+              <PlaygroundSkeleton />
+            </SkeletonRegion>
+          ) : (
+            <>
+              <RequestComposer playground={playground} endpoints={endpoints} categories={categories} />
+              <SnippetPanel
+                config={playground.config}
+                baseUrl={environment.apiBaseUrl || site.url}
+                binaryMode={playground.binaryMode}
+              />
+            </>
+          )}
         </div>
 
         <div className="flex min-w-0 flex-col gap-6">

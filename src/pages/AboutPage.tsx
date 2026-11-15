@@ -1,4 +1,4 @@
-import { TLink } from '@/components/motion/PageTransition'
+import { Link } from 'react-router-dom'
 import { ArrowUpRight, Globe2, Code2, HeartHandshake, Rocket } from 'lucide-react'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { KOrbitArtwork } from '@/components/hero/KOrbitArtwork'
@@ -45,12 +45,12 @@ export default function AboutPage() {
             Today, Kyyinfinite brings together six categories of useful tools, from AI text utilities to lookup services. They all follow the same response format, making integration easier. The platform is designed to grow as new services and capabilities are added.
           </p>
           <div className="mt-8 flex flex-wrap gap-4">
-            <TLink to="/apis" className="btn-primary h-12 px-6 text-sm">
+            <Link to="/apis" className="btn-primary h-12 px-6 text-sm">
               Browse the library <ArrowUpRight size={15} />
-            </TLink>
-            <TLink to="/docs" className="btn-outline-paper h-12 px-6 text-sm">
+            </Link>
+            <Link to="/docs" className="btn-outline-paper h-12 px-6 text-sm">
               Read the docs
-            </TLink>
+            </Link>
           </div>
         </div>
 

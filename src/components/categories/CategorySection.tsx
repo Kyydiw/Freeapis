@@ -1,14 +1,9 @@
 import { ArrowUpRight } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import { useCatalogCategories } from '@/hooks/useCatalog'
 import { CategoryCard } from './CategoryCard'
 import { Reveal } from '@/components/motion/Reveal'
-import { TLink } from '@/components/motion/PageTransition'
-
-function CategorySkeleton() {
-  return (
-    <div className="h-full min-h-[168px] animate-pulse rounded-2xl border border-line bg-paper-raised" />
-  )
-}
+import { CategoryCardSkeleton, SkeletonRegion } from '@/components/skeletons'
 
 export function CategorySection() {
   const { data: categories, isError } = useCatalogCategories()
@@ -26,7 +21,7 @@ export function CategorySection() {
           <p className="mt-4 max-w-[240px] font-body text-[14.5px] leading-[1.55] text-ink">
             Discover a wide range of APIs, built to power your projects.
           </p>
-          <TLink
+          <Link
             to="/apis"
             className="group mt-5 inline-flex items-center gap-2 border-b border-cobalt pb-0.5 font-body text-[14px] font-semibold text-cobalt transition-colors hover:text-ink"
           >
@@ -35,19 +30,27 @@ export function CategorySection() {
               size={16}
               className="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
             />
-          </TLink>
+          </Link>
         </Reveal>
 
         <div className="grid gap-3.5 sm:grid-cols-2 xl:grid-cols-3">
-          {isError && !categories
-            ? <p className="col-span-full font-body text-sm text-ink-soft">Categories are temporarily unavailable.</p>
-            : !categories
-            ? Array.from({ length: 6 }, (_, index) => <CategorySkeleton key={index} />)
-            : categories.map((category, index) => (
-                <Reveal key={category.id} delay={(index % 3) * 0.06}>
-                  <CategoryCard category={category} />
-                </Reveal>
+          {isError && !categories ? (
+            <p className="col-span-full font-body text-sm text-ink-soft">
+              Categories are temporarily unavailable.
+            </p>
+          ) : !categories ? (
+            <SkeletonRegion label="Loading categories" className="col-span-full grid gap-3.5 sm:grid-cols-2 xl:grid-cols-3">
+              {Array.from({ length: 6 }, (_, index) => (
+                <CategoryCardSkeleton key={index} />
               ))}
+            </SkeletonRegion>
+          ) : (
+            categories.map((category, index) => (
+              <Reveal key={category.id} delay={(index % 3) * 0.06}>
+                <CategoryCard category={category} />
+              </Reveal>
+            ))
+          )}
         </div>
       </div>
     </section>

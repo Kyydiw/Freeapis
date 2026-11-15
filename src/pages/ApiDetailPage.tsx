@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react'
 import { CategoryIcon } from '@/components/categories/CategoryIcon'
-import { useParams } from 'react-router-dom'
-import { TLink } from '@/components/motion/PageTransition'
+import { useParams, Link } from 'react-router-dom'
 import { ArrowLeft, ArrowUpRight, FlaskConical } from 'lucide-react'
 import { useCatalog } from '@/hooks/useCatalog'
 import { EndpointBadge } from '@/components/api/EndpointBadge'
@@ -10,6 +9,7 @@ import { CopyButton } from '@/components/code/CopyButton'
 import { DataTable } from '@/components/ui/DataTable'
 import { Tabs } from '@/components/ui/Tabs'
 import { PageContainer } from '@/components/layout/PageContainer'
+import { ApiDetailSkeleton, SkeletonRegion } from '@/components/skeletons'
 import { buildCurl, buildFetch, buildPython, isBinaryEndpoint } from '@/components/api/CodeExamples'
 import type { ApiRequestConfig } from '@/services/api/api.types'
 import { environment } from '@/config/environment'
@@ -39,7 +39,7 @@ function jsonBlock(payload: Record<string, unknown> | Record<string, unknown>[])
 
 export default function ApiDetailPage() {
   const { category, endpoint: endpointId } = useParams()
-  const { data, isLoading, isError, refetch } = useCatalog()
+  const { data, isPending, isError, refetch } = useCatalog()
   const endpoint = useMemo(
     () =>
       category && endpointId
@@ -83,14 +83,11 @@ export default function ApiDetailPage() {
   const exampleLanguage: string =
     exampleTab === 'curl' ? 'curl' : exampleTab === 'python' ? 'python' : 'javascript'
 
-  if (isLoading) {
+  if (isPending) {
     return (
-      <PageContainer className="py-10 md:py-14">
-        <div className="flex items-center gap-3 text-ink-soft">
-          <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-cobalt" />
-          <span className="font-mono text-sm">Loading endpoint…</span>
-        </div>
-      </PageContainer>
+      <SkeletonRegion label="Loading endpoint">
+        <ApiDetailSkeleton />
+      </SkeletonRegion>
     )
   }
 
@@ -114,12 +111,12 @@ export default function ApiDetailPage() {
 
   return (
     <PageContainer className="py-10 md:py-14">
-      <TLink
+      <Link
         to={`/apis?category=${endpoint.category}`}
         className="inline-flex items-center gap-2 font-body text-sm font-semibold text-ink-soft transition-colors hover:text-cobalt"
       >
         <ArrowLeft size={15} aria-hidden="true" /> Back to {categoryName ?? 'explorer'}
-      </TLink>
+      </Link>
 
       <div className="mt-6 flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
         <div className="max-w-2xl">
@@ -136,12 +133,12 @@ export default function ApiDetailPage() {
         </div>
 
         <div className="flex shrink-0 flex-col gap-3 sm:flex-row lg:flex-col">
-          <TLink
+          <Link
             to={`/playground?endpoint=${endpoint.id}`}
             className="btn-primary h-12 px-6 text-sm"
           >
             <FlaskConical size={16} aria-hidden="true" /> Try this API
-          </TLink>
+          </Link>
           <span className="inline-flex h-12 items-center justify-center gap-2 rounded-xl border-[1.5px] border-line bg-paper-raised px-6 font-body text-sm font-bold text-ink-soft shadow-tactileLine">
             <span className="h-2 w-2 rounded-full bg-success" aria-hidden="true" />
             No authentication required
@@ -292,12 +289,12 @@ export default function ApiDetailPage() {
         <p className="mt-2 max-w-lg font-body text-sm leading-relaxed text-ink-soft">
           Send a live request from the playground and inspect the response, timing, and size — no setup required.
         </p>
-        <TLink
+        <Link
           to={`/playground?endpoint=${endpoint.id}`}
           className="btn-primary mt-5 h-12 px-6 text-sm"
         >
           Open in Playground <ArrowUpRight size={15} aria-hidden="true" />
-        </TLink>
+        </Link>
       </div>
     </PageContainer>
   )

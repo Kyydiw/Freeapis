@@ -1,10 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
-import { useLocation } from 'react-router-dom'
+import { Link, NavLink, useLocation } from 'react-router-dom'
 import { ChevronDown, Menu, X, ArrowUpRight, Search } from 'lucide-react'
 import { Logo } from '@/components/ui/Logo'
 import { Dropdown } from '@/components/ui/Dropdown'
 import { useSearchDialog, SearchDialogOverlay } from '@/components/ui/SearchDialog'
-import { TLink, TNavLink } from '@/components/motion/PageTransition'
 import { useCatalogCategories } from '@/hooks/useCatalog'
 import { cn } from '@/utils/cn'
 
@@ -19,7 +18,7 @@ function ApisMenu({ onNavigate }: { onNavigate?: () => void }) {
   return (
     <div className="grid gap-0.5">
       {(categories ?? []).map((category) => (
-        <TLink
+        <Link
           key={category.id}
           to={`/apis?category=${category.id}`}
           onClick={onNavigate}
@@ -38,15 +37,15 @@ function ApisMenu({ onNavigate }: { onNavigate?: () => void }) {
             size={14}
             className="text-ink-soft opacity-0 transition-all group-hover:translate-x-0.5 group-hover:text-cobalt group-hover:opacity-100"
           />
-        </TLink>
+        </Link>
       ))}
-      <TLink
+      <Link
         to="/apis"
         onClick={onNavigate}
         className="mt-1 flex items-center justify-center gap-2 rounded-xl border border-line-muted bg-paper px-3 py-2.5 font-body text-[13px] font-semibold text-ink transition-colors hover:border-cobalt hover:text-cobalt"
       >
         View all endpoints <ArrowUpRight size={14} />
-      </TLink>
+      </Link>
     </div>
   )
 }
@@ -78,9 +77,9 @@ export function Navbar() {
         className="sticky top-0 z-50 border-b border-line bg-paper/95 backdrop-blur-sm"
       >
         <div className="shell flex h-[72px] items-center justify-between gap-6 lg:h-[82px]">
-          <TLink to="/" aria-label="Kyyinfinite home" className="shrink-0">
+          <Link to="/" aria-label="Kyyinfinite home" className="shrink-0">
             <Logo />
-          </TLink>
+          </Link>
 
           <nav className="hidden items-center gap-9 lg:flex" aria-label="Primary">
             <Dropdown
@@ -106,15 +105,15 @@ export function Navbar() {
               {({ close }) => <ApisMenu onNavigate={close} />}
             </Dropdown>
 
-            <TNavLink to="/docs" className={navLinkClass}>
+            <NavLink to="/docs" className={navLinkClass}>
               Docs
-            </TNavLink>
-            <TNavLink to="/status" className={navLinkClass}>
+            </NavLink>
+            <NavLink to="/status" className={navLinkClass}>
               Status
-            </TNavLink>
-            <TNavLink to="/about" className={navLinkClass}>
+            </NavLink>
+            <NavLink to="/about" className={navLinkClass}>
               About
-            </TNavLink>
+            </NavLink>
           </nav>
 
           <div className="hidden items-center gap-4 xl:flex">
@@ -133,12 +132,12 @@ export function Navbar() {
               </span>
             </button>
 
-            <TLink
+            <Link
               to="/apis"
               className="inline-flex h-11 items-center gap-2 rounded-[10px] bg-navy px-5 font-body text-sm font-semibold text-white transition-colors hover:bg-[#1a2334]"
             >
               Explore APIs <ArrowUpRight size={15} />
-            </TLink>
+            </Link>
           </div>
 
           <div className="flex items-center gap-3 xl:hidden">
@@ -177,13 +176,13 @@ export function Navbar() {
               <ApisMenu onNavigate={closeMobile} />
             </nav>
 
-            <TLink
+            <Link
               to="/apis"
               onClick={closeMobile}
               className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-navy px-5 font-body text-sm font-semibold text-white"
             >
               Explore APIs <ArrowUpRight size={15} />
-            </TLink>
+            </Link>
           </div>
         </div>
       )}
@@ -203,7 +202,7 @@ function MobileNavLink({
   onNavigate?: () => void
 }) {
   return (
-    <TNavLink
+    <NavLink
       to={to}
       onClick={onNavigate}
       className={({ isActive }) =>
@@ -214,6 +213,6 @@ function MobileNavLink({
       }
     >
       {label}
-    </TNavLink>
+    </NavLink>
   )
 }

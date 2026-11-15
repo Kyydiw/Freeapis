@@ -1,4 +1,4 @@
-import { TLink } from '@/components/motion/PageTransition'
+import { Link } from 'react-router-dom'
 import { ChevronRight } from 'lucide-react'
 import { cn } from '@/utils/cn'
 import type { ApiCategory } from '@/services/api/api.types'
@@ -6,7 +6,7 @@ import { CategoryIcon } from './CategoryIcon'
 
 export function CategoryCard({ category }: { category: ApiCategory }) {
   return (
-    <TLink
+    <Link
       to={`/apis?category=${category.id}`}
       className={cn(
         'group relative flex h-full min-h-[84px] items-center gap-3.5 rounded-[14px] border border-line bg-paper-raised/70 px-[18px] py-4',
@@ -41,6 +41,6 @@ export function CategoryCard({ category }: { category: ApiCategory }) {
       >
         <ChevronRight size={15} strokeWidth={2.4} />
       </span>
-    </TLink>
+    </Link>
   )
 }

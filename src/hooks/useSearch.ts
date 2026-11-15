@@ -4,7 +4,7 @@ import { filterEndpoints } from '@/services/api/catalog'
 import type { ApiEndpoint } from '@/services/api/api.types'
 
 export function useSearch(limit = 8) {
-  const { data } = useCatalog()
+  const { data, isPending } = useCatalog()
   const endpoints = data?.endpoints
   const [query, setQuery] = useState('')
   const [open, setOpen] = useState(false)
@@ -53,5 +53,5 @@ export function useSearch(limit = 8) {
     [data],
   )
 
-  return { query, setQuery, results, open, openDialog, closeDialog, categoryName }
+  return { query, setQuery, results, open, openDialog, closeDialog, categoryName, catalogPending: isPending }
 }

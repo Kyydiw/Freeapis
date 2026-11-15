@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useMemo, useRef, useState } from 'react'
 import { request } from '@/services/api/client'
 import type { ApiEndpoint, ApiRequestConfig, ApiResponse, HttpMethod } from '@/services/api/api.types'
 import { ApiError, NetworkError, TimeoutError, formatApiError } from '@/services/api/api.errors'
@@ -63,6 +63,9 @@ export function usePlaygroundRequest(endpoints: ApiEndpoint[]) {
   const [bodyText, setBodyText] = useState('')
   const [state, setState] = useState<PlayState>({ phase: 'idle' })
   const history = useRequestHistory()
+  // Aborting the previous request keeps a slow response from overwriting
+  // the state of whichever request the user sends next.
+  const abortRef = useRef<AbortController | null>(null)
 
   const config: ApiRequestConfig = useMemo(() => {
     const query: Record<string, string> = {}
@@ -135,10 +138,14 @@ export function usePlaygroundRequest(endpoints: ApiEndpoint[]) {
 
   const send = useCallback(
     async (override?: ApiRequestConfig) => {
+      abortRef.current?.abort()
+      const controller = new AbortController()
+      abortRef.current = controller
       const target = override ?? config
       setState({ phase: 'loading' })
       try {
-        const response = await request<Record<string, unknown>>(target)
+        const response = await request<Record<string, unknown>>({ ...target, signal: controller.signal })
+        if (controller.signal.aborted) return
         setState({ phase: 'done', response })
         history.record(target, {
           status: response.status,
@@ -149,9 +156,11 @@ export function usePlaygroundRequest(endpoints: ApiEndpoint[]) {
         })
       } catch (error) {
         if (error instanceof DOMException && error.name === 'AbortError') {
-          setState({ phase: 'idle' })
+          // Superseded requests leave the newer request's state alone.
+          if (abortRef.current === controller) setState({ phase: 'idle' })
           return
         }
+        if (controller.signal.aborted) return
         const errorState = toErrorState(error)
         setState({ phase: 'error', error: errorState })
         history.record(target, {
@@ -178,11 +187,10 @@ export function usePlaygroundRequest(endpoints: ApiEndpoint[]) {
 
   const rerunEntry = useCallback(
     (entry: HistoryEntry) => {
-      if (state.phase === 'loading') return
       loadEntry(entry)
       void send({ ...entry.request })
     },
-    [state.phase, loadEntry, send],
+    [loadEntry, send],
   )
 
   const busy = state.phase === 'loading'

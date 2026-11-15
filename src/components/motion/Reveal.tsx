@@ -1,7 +1,6 @@
 import { createElement, useEffect, useRef } from 'react'
 import type { ElementType, ReactNode } from 'react'
 import { gsap, MQ, DUR } from '@/animations/gsap.setup'
-import { onPageReady } from '@/animations/pageState'
 
 export interface RevealProps {
   children: ReactNode
@@ -11,6 +10,12 @@ export interface RevealProps {
   as?: ElementType
 }
 
+/**
+ * Scroll-triggered reveal. Fully independent of page navigation: the
+ * animation is armed as soon as the element mounts and plays when the
+ * element scrolls into view. `mm.revert()` in the cleanup kills the tween
+ * and its ScrollTrigger, so route changes never leak stale instances.
+ */
 export function Reveal({ children, className = '', delay = 0, distance = 34, as = 'div' }: RevealProps) {
   const elementRef = useRef<HTMLElement>(null)
 
@@ -22,18 +27,14 @@ export function Reveal({ children, className = '', delay = 0, distance = 34, as 
       const conditions = context.conditions as { reduce?: boolean }
       if (conditions.reduce) return undefined
       gsap.set(element, { y: distance, autoAlpha: 0 })
-      return onPageReady(() => {
-        context.add(() => {
-          gsap.to(element, {
-            y: 0,
-            autoAlpha: 1,
-            duration: DUR.enter + 0.15,
-            delay,
-            ease: 'power4.out',
-            clearProps: 'transform,opacity,visibility',
-            scrollTrigger: { trigger: element, start: 'top 88%', once: true },
-          })
-        })
+      gsap.to(element, {
+        y: 0,
+        autoAlpha: 1,
+        duration: DUR.enter + 0.15,
+        delay,
+        ease: 'power4.out',
+        clearProps: 'transform,opacity,visibility',
+        scrollTrigger: { trigger: element, start: 'top 88%', once: true },
       })
     })
     return () => mm.revert()

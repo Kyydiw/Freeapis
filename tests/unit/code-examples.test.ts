@@ -8,7 +8,7 @@ describe('copy-ready API examples', () => {
     const params = legacyEndpointDefinitions.flatMap((endpoint) => endpoint.docs.params)
     // The catalog grew after migrations 0005/0006 (AI + search endpoints),
     // so this count tracks the current seed inventory.
-    expect(params.length).toBe(104)
+    expect(params.length).toBe(120)
     expect(params.every((param) => param.example !== undefined)).toBe(true)
   })
 

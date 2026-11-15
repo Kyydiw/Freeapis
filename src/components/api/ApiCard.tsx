@@ -1,4 +1,4 @@
-import { TLink } from '@/components/motion/PageTransition'
+import { Link } from 'react-router-dom'
 import { ArrowUpRight } from 'lucide-react'
 import { CategoryIcon } from '@/components/categories/CategoryIcon'
 import { EndpointBadge } from './EndpointBadge'
@@ -7,7 +7,7 @@ import { cn } from '@/utils/cn'
 
 export function ApiCard({ endpoint }: { endpoint: ApiEndpoint }) {
   return (
-    <TLink
+    <Link
       to={`/apis/${endpoint.category}/${endpoint.id}`}
       className={cn(
         'group flex flex-col gap-3 rounded-[14px] border border-line bg-paper-raised p-5',
@@ -38,6 +38,6 @@ export function ApiCard({ endpoint }: { endpoint: ApiEndpoint }) {
           FREE · NO KEY
         </span>
       </div>
-    </TLink>
+    </Link>
   )
 }
